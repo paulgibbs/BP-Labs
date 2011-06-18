@@ -65,7 +65,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 	 *
 	 * @global object $bp BuddyPress global settings
 	 * @return mixed Either HTML or JSON. If error, "-1" for missing parameters, "0" for no matches.
-	 * @see bp-activity/js/jquery.mentions.js
+	 * @see bp-labs/beakers/js/jquery.mentions.dev.js
 	 * @since 1.0
 	 * @static
 	 */
@@ -98,7 +98,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 			$args['orderby'] = 'nicename';
 		}
 
-		$args = apply_filters( 'bpl_activity_mention_autosuggest_args', $args );
+		$args = apply_filters( 'bpl_mention_autosuggest_args', $args );
 
 		// Search users
 		$user_search_results = get_users( $args );
@@ -139,7 +139,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 				$search_results['others'][]  = $result;
 		}
 
-		apply_filters_ref_array( 'bpl_activity_mention_autosuggest', array( &$search_results, $args ) );
+		apply_filters_ref_array( 'bpl_mention_autosuggest', array( &$search_results, $args ) );
 
 		// Return JSON
 		if ( !empty( $_POST['format'] ) && 'json' == $_POST['format'] ) {
@@ -170,7 +170,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 
 				// For third-party extensions
 				} else {
-					$custom_section = apply_filters( 'bpl_activity_mention_autosuggest_custom_section', false, $section, $items );
+					$custom_section = apply_filters( 'bpl_mention_autosuggest_custom_section', false, $section, $items );
 
 					if ( !empty( $custom_section ) )
 						$html = array_merge( $html, (array) $custom_section );
@@ -181,7 +181,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 			if ( empty( $html ) )
 				$html[] = sprintf( '<li class="section error"><p><span>%s</span> %s</p></li>', _x( 'No matches found.', 'no search results', 'bpl' ), _x( 'Please check your spelling.', 'no search results', 'bpl' ) );
 
-			exit( apply_filters( 'bpl_activity_mention_autosuggest_html', implode( PHP_EOL, $html ), $html ) );
+			exit( apply_filters( 'bpl_mention_autosuggest_html', implode( PHP_EOL, $html ), $html ) );
 		}
 	}
 }
