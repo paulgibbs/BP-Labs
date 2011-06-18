@@ -122,7 +122,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 
 		// If logged in, get user's friends
 		$friend_ids = array();
-		if ( !empty( $bp->loggedin_user->id ) )
+		if ( !empty( $bp->loggedin_user->id ) && bp_is_active( 'friends' ) )
 			$friend_ids = friends_get_friend_user_ids( $bp->loggedin_user->id );
 
 		$search_results = array( 'friends' => array(), 'others' => array() );

@@ -80,10 +80,14 @@ class BPLabs {
 	protected function _includes() {
 		require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-beaker.php' );
 
-		require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-autosuggest.php' );
-		require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-quickadmin.php' );
+		if ( bp_is_active( 'activity' ) )
+			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-autosuggest.php' );
 
-		//require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-swish.php' );
+		if ( bp_is_active( 'groups' ) )
+			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-quickadmin.php' );
+
+		//if ( bp_is_active( 'activity' ) )
+		//	require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-swish.php' );
 		// I bet you want to know what Swish is going to do.
 
 		do_action( 'bplabs_includes' );
