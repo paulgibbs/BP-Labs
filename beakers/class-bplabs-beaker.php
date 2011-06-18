@@ -24,6 +24,9 @@ abstract class BPLabs_Beaker {
 	 * @since 1.0
 	 */
 	function __construct() {
+		if ( is_admin() )
+			return;
+
 		add_action( 'init', array( $this, 'enqueue_script' ) );
 		add_action( 'init', array( $this, 'enqueue_style' ) );
 		add_action( 'init', array( $this, 'register_actions' ) );
