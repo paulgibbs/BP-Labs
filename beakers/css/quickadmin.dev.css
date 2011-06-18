@@ -1,0 +1,6 @@
+#groups-list li .bpl-quickadmin {
+	display: none;
+}
+#groups-list li:hover .bpl-quickadmin {
+	display: block;
+}

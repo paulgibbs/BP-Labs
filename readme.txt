@@ -34,6 +34,14 @@ For help, or to report bugs, visit the [support forum](http://buddypress.org/com
 
 This is a known issue because of how parts of BuddyPress 1.2.8's BP-Default theme are written. To solution is to upgrade to BuddyPress 1.3.
 
+= I've created a group, and Quick Admin links aren't appearing in the directory =
+
+At the moment, only super admins are able to view the Quick Admin links. This will be addressed in a future version.
+
+= How do I enable only one of the experiments, or, where are the plugin's settings? =
+
+There are no plugin option panels yet. This will be addressed in a future version.
+
 == Screenshots ==
 
 1. @mentions autosuggest

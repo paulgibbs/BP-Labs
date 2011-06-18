@@ -20,12 +20,12 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 	 * @since 1.0
 	 */
 	function enqueue_script() {
-		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/js';
+		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/js/jquery.mentions';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
-			wp_enqueue_script( 'bplabs-autosuggest-js', "{$dir}/jquery.mentions.dev.js", array( 'jquery' ), '1.0' );
+			wp_enqueue_script( 'bplabs-autosuggest-js', "{$dir}.dev.js", array( 'jquery' ), '1.0' );
 		else
-			wp_enqueue_script( 'bplabs-autosuggest-js', "{$dir}/jquery.mentions.js", array( 'jquery' ), '1.0' );
+			wp_enqueue_script( 'bplabs-autosuggest-js', "{$dir}.js", array( 'jquery' ), '1.0' );
 
 		wp_localize_script( 'bplabs-autosuggest-js', 'BPMentions', array(
 			'error1'     => __( 'Sorry, an error occurred.', 'bpl' ),
@@ -34,7 +34,12 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 		) );
 
 		// This bit of javascript is what you could add directly to your theme
-		wp_enqueue_script( 'bplabs-autosuggest-theme-js', "{$dir}/autosuggest.js", array( 'bplabs-autosuggest-js' ), '1.0' );
+		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/js/autosuggest';
+
+		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
+			wp_enqueue_script( 'bplabs-autosuggest-theme-js', "{$dir}.dev.js", array( 'bplabs-autosuggest-js' ), '1.0' );
+		else
+			wp_enqueue_script( 'bplabs-autosuggest-theme-js', "{$dir}.js", array( 'bplabs-autosuggest-js' ), '1.0' );
 	}
 
 	/**
