@@ -10,7 +10,7 @@ BP Labs contains unofficial and experimental BuddyPress features for testing and
 
 == Description ==
 
-BP Labs contains two BuddyPress experiments; *@mentions autosuggest* and *Quick Admin*. All experiments are in beta, and come with no guarantees.
+BP Labs contains two unofficial BuddyPress experiments; *@mentions autosuggest* and *Quick Admin*. All experiments are in beta, and come with no guarantees.
 
 *@mentions autosuggest* requires the Activity Stream component, and extends its @messaging feature to help you find the short name of a user. It is integrated into comments, the "What's New" activity status box, Private Messaging (body) and bbPress forums. To trigger the autosuggest, type an `@` followed by at least one other letter.
 For example, to mention to Paul Gibbs, you could type `@Paul G`, and it will show a list of users who match. You can then select one of these users, and their short name will be added to the text area (even if Paul's short name is `paulgibbs`).
