@@ -52,7 +52,7 @@ class BPLabs {
 	 * @since 1.0
 	 * @static
 	 */
-	function &init() {
+	static function &init() {
 		static $instance = false;
 
 		if ( !$instance ) {

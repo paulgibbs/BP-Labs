@@ -20,7 +20,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 	 * @since 1.0
 	 */
 	function enqueue_script() {
-		$dir = dirname( plugin_basename( __FILE__ ) ) . '/js';
+		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/js';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
 			wp_enqueue_script( 'bplabs-autosuggest-js', "{$dir}/jquery.mentions.dev.js", array( 'jquery' ), '1.0' );
@@ -33,6 +33,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 			'searching'  => _x( 'Searching...', 'started a search', 'bpl' )
 		) );
 
+		// This bit of javascript is what you could add directly to your theme
 		wp_enqueue_script( 'bplabs-autosuggest-theme-js', "{$dir}/autosuggest.js", array( 'bplabs-autosuggest-js' ), '1.0' );
 	}
 
@@ -42,7 +43,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 	 * @since 1.0
 	 */
 	function enqueue_style() {
-		$dir = dirname( plugin_basename( __FILE__ ) ) . '/css/jquery.mentions';
+		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/css/jquery.mentions';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
 			wp_enqueue_style( 'bplabs-autosuggest', "{$dir}.dev.css", array(), '1.0' );
@@ -51,12 +52,12 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 	}
 
 	/**
-	 * Add actions
+	 * Add the AJAX callback for the mention_autosuggest() method.
 	 *
 	 * @since 1.0
 	 */
-	function register_actions() {
-		add_action( 'wp_ajax_activity_mention_autosuggest', array( $this, 'mention_autosuggest' ) );
+	protected function register_actions() {
+		add_action( 'wp_ajax_activity_mention_autosuggest', array( 'BPLabs_Autosuggest', 'mention_autosuggest' ) );
 	}
 
 	/**
@@ -66,8 +67,9 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 	 * @return mixed Either HTML or JSON. If error, "-1" for missing parameters, "0" for no matches.
 	 * @see bp-activity/js/jquery.mentions.js
 	 * @since 1.0
+	 * @static
 	 */
-	function mention_autosuggest() {
+	static function mention_autosuggest() {
 		global $bp;
 
 		if ( empty( $_POST['limit'] ) || empty( $_POST['search'] ) )
