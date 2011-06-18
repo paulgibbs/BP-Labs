@@ -13,7 +13,7 @@ if ( !defined( 'ABSPATH' ) )
 /**
  * Each component of BP Labs needs to extend and implement this beaker class.
  *
- * I haven't built pieces of plugin functionality in this pattern before. This, too, is an experiment!
+ * I haven't built pieces of plugin functionality in this pattern before. This, too, is an experiment; for science!
  *
  * @since 1.0
  */
@@ -24,9 +24,9 @@ abstract class BPLabs_Beaker {
 	 * @since 1.0
 	 */
 	function __construct() {
-		add_action( 'init', array( 'BPLabs', 'enqueue_script' ) );
-		add_action( 'init', array( 'BPLabs', 'enqueue_style' ) );
-		add_action( 'init', array( 'BPLabs', 'register_actions' ) );
+		add_action( 'init', array( $this, 'enqueue_script' ) );
+		add_action( 'init', array( $this, 'enqueue_style' ) );
+		add_action( 'init', array( $this, 'register_actions' ) );
 	}
 
 	/**
@@ -46,7 +46,7 @@ abstract class BPLabs_Beaker {
 	}
 
 	/**
-	 * Hook 
+	 * Hook into actions here. The true starting point for a new experiment.
 	 *
 	 * @since 1.0
 	 */
