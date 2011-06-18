@@ -138,7 +138,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 			else
 			 	$result->id = $user->user_nicename;
 
-			if ( in_array( $user->ID, $friend_ids ) )
+			if ( in_array( $user->ID, (array) $friend_ids ) )
 				$search_results['friends'][] = $result;
 			else
 				$search_results['others'][]  = $result;
