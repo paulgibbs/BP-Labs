@@ -3,7 +3,7 @@
  * Plugin Name: BP Labs
  * Plugin URI: http://buddypress.org/community/groups/bp-labs/
  * Description: BP Labs contains unofficial and experimental BuddyPress features for testing and feedback. Cake, and grief counselling, will be available at the conclusion of the plugin.
- * Version: 1.0
+ * Version: 1.1
  * Author: Paul Gibbs
  * Author URI: http://byotos.com
  * Network: true
@@ -38,6 +38,11 @@ if ( !defined( 'ABSPATH' ) )
 	exit;
 
 /**
+ * Version number
+ */
+define ( 'BP_LABS_VERSION', '1.1' );
+
+/**
  * Welcome to the main BP Labs class. Anything and everything happens in here, come on in!
  *
  * @since 1.0
@@ -66,22 +71,48 @@ class BPLabs {
 	/**
 	 * Constructor.
 	 *
+	 * Include experiments and set up the admin screen.
+	 *
+	 * @global object $bp BuddyPress global settings
 	 * @since 1.0
 	 */
 	function __construct() {
-		$this->_includes();
+		$this->_include_experiments();
+		$this->_load_admin_screen();
+
+		add_filter( 'plugin_action_links', array( $this, '_add_settings_link' ), 10, 2 );
 	}
 
 	/**
-	 * Include beakers for science.
+	 * Add link to settings screen on the WP Admin 'plugins' page
+	 *
+	 * @param array $links Item links
+	 * @param string $file Plugin's file name
+	 * @since 1.1
+	 */
+	function _add_settings_link( $links, $file ) {
+		if ( 'bp-labs/bp-labs.php' != $file )
+			return $links;
+
+		$settings_link = sprintf( '<a href="%s">%s</a>', network_admin_url( 'admin.php?page=bplabs' ), __( 'Settings', 'dpa' ) );
+		array_unshift( $links, $settings_link );
+
+		return $links;
+	}
+
+	/**
+	 * Include beakers; for science!
 	 *
 	 * @since 1.0
 	 */
-	protected function _includes() {
+	protected function _include_experiments() {
 		require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-beaker.php' );
 
-		if ( bp_is_active( 'activity' ) )
+		if ( bp_is_active( 'activity' ) ) {
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-autosuggest.php' );
+			//require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-lookingglass.php' );
+			// !defined( 'BP_DISABLE_ADMIN_BAR' ) || !BP_DISABLE_ADMIN_BAR
+		}
 
 		if ( bp_is_active( 'groups' ) )
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-quickadmin.php' );
@@ -90,7 +121,20 @@ class BPLabs {
 		//	require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-swish.php' );
 		// I bet you want to know what Swish is going to do.
 
-		do_action( 'bplabs_includes' );
+		do_action( 'bplabs_include_experiments' );
+	}
+
+	/**
+	 * Set up admin screen
+	 *
+	 * @since 1.1
+	 */
+	protected function _load_admin_screen() {
+		if ( !is_admin() || ( !is_user_logged_in() || !is_super_admin() ) )
+			return;
+
+		require_once( dirname( __FILE__ ) . '/admin.php' );
+		do_action( 'bplabs_load_admin_screen' );
 	}
 }
 add_action( 'bp_include', array( 'BPLabs', 'init' ) );

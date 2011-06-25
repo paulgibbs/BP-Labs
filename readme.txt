@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=P3K7Z
 Tags: buddypress,experimental
 Requires at least: WordPress 3.1, BuddyPress 1.2.8
 Tested up to: WordPress 3.2, BuddyPress 1.3
-Stable tag: 1.0
+Stable tag: 1.1
 
 BP Labs contains unofficial and experimental BuddyPress features for testing and feedback. Works best with BuddyPress 1.3.
 
