@@ -47,20 +47,25 @@ class BPLabs_Admin {
 	 * @since 1.1
 	 */
 	function init() {
+		if ( empty( $_GET['tab'] ) )
+			$tab = 'settings';
+		else
+			$tab = 'support';
+
 		add_screen_option( 'layout_columns', array( 'max' => 2 ) );
 
-		// Main tab
-		add_meta_box( 'bpl-likethis', __( 'Love BP Labs?', 'bpl' ), array( $this, '_like_this_plugin' ), 'buddypress_page_bplabs_settings_metabox', 'side', 'default' );
-		add_meta_box( 'bpl-paypal', __( 'Give Kudos', 'bpl' ), array( $this, '_paypal' ), 'buddypress_page_bplabs_settings_metabox', 'side', 'default' );
-		add_meta_box( 'bpl-latest', __( 'Latest News', 'bpl' ), array( $this, '_metabox_latest_news' ), 'buddypress_page_bplabs_settings_metabox', 'side', 'default' );
-
 		// Support tab
-		add_meta_box( 'bpl-helpushelpyou', __( 'Help Me Help You', 'bpl' ),     array( $this, '_helpushelpyou'), 'buddypress_page_bplabs_support_metabox', 'side', 'default' );
-		add_meta_box( 'bpl-paypal', __( 'Give Kudos', 'bpl' ), array( $this, '_paypal' ), 'buddypress_page_bplabs_support_metabox', 'side', 'default' );
-		add_meta_box( 'bpl-latest', __( 'Latest News', 'bpl' ), array( $this, '_metabox_latest_news' ), 'buddypress_page_bplabs_support_metabox', 'side', 'default' );
+		if ( 'support' == $tab )
+			add_meta_box( 'bpl-helpushelpyou', __( 'Help Me Help You', 'bpl' ), array( $this, '_helpushelpyou'), 'buddypress_page_bplabs', 'side', 'high' );
+		else
+			add_meta_box( 'bpl-likethis', __( 'Love BP Labs?', 'bpl' ), array( $this, '_like_this_plugin' ), 'buddypress_page_bplabs', 'side', 'default' );
 
-		wp_enqueue_script( 'nav-menu' );
+		// Main tab
+		add_meta_box( 'bpl-paypal', __( 'Give Kudos', 'bpl' ), array( $this, '_paypal' ), 'buddypress_page_bplabs', 'side', 'default' );
+		add_meta_box( 'bpl-latest', __( 'Latest News', 'bpl' ), array( $this, '_metabox_latest_news' ), 'buddypress_page_bplabs', 'side', 'default' );
+
 		wp_enqueue_script( 'postbox' );
+		wp_enqueue_script( 'dashboard' );
 	}
 
 	/**
@@ -105,12 +110,7 @@ class BPLabs_Admin {
 					<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ); ?>
 
 					<div id="side-info-column" class="inner-sidebar">
-						<?php
-						if ( 'support' == $tab )
-							do_meta_boxes( 'buddypress_page_bplabs_support_metabox', 'side', $settings );
-						else
-							do_meta_boxes( 'buddypress_page_bplabs_settings_metabox', 'side', $settings );
-						?>
+						<?php do_meta_boxes( 'buddypress_page_bplabs', 'side', $settings ); ?>
 					</div>
 
 					<div id="post-body" class="has-sidebar">
@@ -233,9 +233,10 @@ class BPLabs_Admin {
 			else
 				$custom_permalinks = __( 'custom', 'bpl' );
 	?>
+
 		<p><?php _e( "If you have trouble, a little information about your site goes a long way.", 'bpl' ); ?></p>
 
-		<h4><?php _e( 'Versions', 'bpl' ) ?></h4>
+		<h4><?php _e( 'Versions', 'bpl' ); ?></h4>
 		<ul>
 			<li><?php printf( __( 'BP Labs: %s', 'bpl' ), BP_LABS_VERSION ); ?></li>
 			<li><?php printf( __( 'BP_ROOT_BLOG: %s', 'bpl' ), $is_bp_root_blog ); ?></li>
@@ -247,7 +248,7 @@ class BPLabs_Admin {
 			<li><?php printf( __( 'WordPress multisite: %s', 'bpl' ), $is_multisite ); ?></li>
 		</ul>
 
-		<h4><?php _e( 'Theme', 'bpl' ) ?></h4>
+		<h4><?php _e( 'Theme', 'bpl' ); ?></h4>
 		<ul>
 			<li><?php printf( __( 'BP-Default child theme: %s', 'bpl' ), $is_bp_default_child_theme ); ?></li>
 			<li><?php printf( __( 'Current theme: %s', 'bpl' ), $theme->name ); ?></li>
@@ -259,6 +260,7 @@ class BPLabs_Admin {
 				<li><?php echo $plugin; ?></li>
 			<?php endforeach; ?>
 		</ul>
+
 	<?php
 	}
 
@@ -290,7 +292,7 @@ class BPLabs_Admin {
 		<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 			<input type="hidden" name="cmd" value="_s-xclick">
 			<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----">
-			<input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online.">
+			<input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="<?php esc_attr_e( 'PayPal', 'bpl' ); ?>">
 			<img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1" />
 		</form>
 
