@@ -82,8 +82,9 @@ class BPLabs_Admin {
 		else
 			$tab = 'support';
 
+		$updated  = $this->_maybe_save();
 		$url      = network_admin_url( 'admin.php?page=bplabs' );
-		$settings = array();
+		$settings = get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true ) );
 	?>
 
 		<style type="text/css">
@@ -93,6 +94,10 @@ class BPLabs_Admin {
 		}
 		#bpl-paypal .inside {
 			text-align: center;
+		}
+		.bpl_autosuggest,
+		.bpl_quickadmin {
+			margin-right: 2em;
 		}
 		</style>
 
@@ -105,26 +110,21 @@ class BPLabs_Admin {
 			</h2>
 
 			<div id="poststuff" class="metabox-holder<?php echo 2 == $screen_layout_columns ? ' has-right-sidebar' : ''; ?>">
-				<form method="post" action="options.php" id="bpl-labs-form">
-					<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
-					<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ); ?>
+				<div id="side-info-column" class="inner-sidebar">
+					<?php do_meta_boxes( 'buddypress_page_bplabs', 'side', $settings ); ?>
+				</div>
 
-					<div id="side-info-column" class="inner-sidebar">
-						<?php do_meta_boxes( 'buddypress_page_bplabs', 'side', $settings ); ?>
-					</div>
+				<div id="post-body" class="has-sidebar">
+					<div id="post-body-content" class="has-sidebar-content">
+						<?php
+						if ( 'support' == $tab )
+							$this->_admin_page_support();
+						else
+							$this->_admin_page_settings( $settings, $updated );
+						?>
+					</div><!-- #post-body-content -->
+				</div><!-- #post-body -->
 
-					<div id="post-body" class="has-sidebar">
-						<div id="post-body-content" class="has-sidebar-content">
-							<?php
-							if ( 'support' == $tab )
-								$this->_admin_page_support();
-							else
-								$this->_admin_page_settings();
-							?>
-						</div><!-- #post-body-content -->
-					</div><!-- #post-body -->
-
-				</forum>
 			</div><!-- #poststuff -->
 		</div><!-- .wrap -->
 
@@ -148,10 +148,68 @@ class BPLabs_Admin {
 	/**
 	 * Main tab's content for the admin page
 	 *
+	 * @param array $settings Plugin settings (from DB)
+	 * @param bool $updated Have settings been updated on the previous page submission?
 	 * @since 1.1
 	 */
-	protected function _admin_page_settings() {
-		echo 'settings';
+	protected function _admin_page_settings( $settings, $updated ) {
+	?>
+		<?php if ( $updated ) : ?>
+			<div id="message" class="updated below-h2"><p><?php _e( 'Your preferences have been updated.', 'bpl' ); ?></p></div>
+		<?php endif; ?>
+
+		<form method="post" action="admin.php?page=bplabs" id="bpl-labs-form">
+			<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
+			<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ); ?>
+
+			<p><?php _e( 'BP Labs contains unofficial BuddyPress experiments which I am making available for testing, feedback, and to give people new shiny things for their websites.', 'bpl' ); ?></p>
+
+			<h4><?php _e( '@mentions autosuggest', 'bpl' ); ?></h4>
+			<p><?php _e( '@mentions autosuggest requires the Activity Stream component, and extends its @messaging feature to help you find the short name of a user. It is integrated into comments, the "What\'s New" activity status box, Private Messaging (body) and bbPress forums. To trigger the autosuggest, type an @ followed by at least one other letter.', 'bpl' ); ?></p>
+			<label><?php _e( 'On', 'bpl' ); ?> <input type="radio" name="bpl_autosuggest" class="bpl_autosuggest" value="on" <?php checked( $settings['autosuggest'] ); ?>/></label>
+			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_autosuggest" class="bpl_autosuggest" value="off" <?php checked( $settings['autosuggest'], false ); ?>/></label>
+
+			<h4><?php _e( 'Quick Admin', 'bpl' ); ?></h4>
+			<p><?php _e( 'Quick Admin requires Groups, and affects the group directory. Designed to help speed up accessing admin screens for each group, hovering over each group in the directory will reveal links to the admin screens for that group.', 'bpl' ); ?></p>
+			<label><?php _e( 'On', 'bpl' ); ?> <input type="radio" name="bpl_quickadmin" class="bpl_quickadmin" value="on" <?php checked( $settings['quickadmin'] ); ?>/></label>
+			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_quickadmin" class="bpl_quickadmin" value="off" <?php checked( $settings['quickadmin'], false ); ?>/></label>
+
+			<p><input type="submit" class="button-primary" value="<?php _e( 'Update Settings', 'bpl' ); ?>" /></p>
+		</form>
+
+	<?php
+	}
+
+	/**
+	 * Check for and handle form submission.
+	 *
+	 * @return bool Have settings been updated?
+	 * @since 1.1
+	 */
+	protected function _maybe_save() {
+		$settings = $existing_settings = get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true ) );
+		$updated  = false;
+
+		if ( !empty( $_POST['bpl_autosuggest'] ) ) {
+			if ( 'on' == $_POST['bpl_autosuggest'] )
+				$settings['autosuggest'] = true;
+			else
+				$settings['autosuggest'] = false;
+		}
+
+		if ( !empty( $_POST['bpl_quickadmin'] ) ) {
+			if ( 'on' == $_POST['bpl_quickadmin'] )
+				$settings['quickadmin'] = true;
+			else
+				$settings['quickadmin'] = false;
+		}
+
+		if ( $settings != $existing_settings ) {
+			update_site_option( 'bplabs', $settings );
+			$updated = true;
+		}
+
+		return $updated;
 	}
 
 	/**
@@ -267,7 +325,7 @@ class BPLabs_Admin {
 	/**
 	 * Social media sharing metabox
 	 *
-	 * @since 2.0
+	 * @since 1.1
 	 * @param array $settings Plugin settings (from DB)
 	 */
 	function _like_this_plugin( $settings ) {
@@ -275,9 +333,9 @@ class BPLabs_Admin {
 
 		<p><?php _e( 'Why not do any or all of the following:', 'bpl' ) ?></p>
 		<ul>
-			<li><p><a href="http://wordpress.org/extend/plugins/bp-labs/"><?php _e( 'Give it a five star rating on WordPress.org', 'bpl' ) ?></a>.</p></li>
-			<li><p><a href="http://buddypress.org/community/groups/bp-labs/reviews/"><?php _e( 'Write a review on BuddyPress.org', 'bpl' ) ?></a>.</p></li>
-			<li><p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=P3K7Z7NHWZ5CL&amp;lc=GB&amp;item_name=B%2eY%2eO%2eT%2eO%2eS%20%2d%20BuddyPress%20plugins&amp;currency_code=GBP&amp;bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><?php _e( 'Fund future experiments', 'bpl' ) ?></a>.</p></li>
+			<li><p><a href="http://wordpress.org/extend/plugins/bp-labs/"><?php _e( 'Give it a five star rating on WordPress.org.', 'bpl' ) ?></a></p></li>
+			<li><p><a href="http://buddypress.org/community/groups/bp-labs/reviews/"><?php _e( 'Write a review on BuddyPress.org.', 'bpl' ) ?></a></p></li>
+			<li><p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=P3K7Z7NHWZ5CL&amp;lc=GB&amp;item_name=B%2eY%2eO%2eT%2eO%2eS%20%2d%20BuddyPress%20plugins&amp;currency_code=GBP&amp;bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><?php _e( 'Fund more experiments.', 'bpl' ) ?></a></p></li>
 		</ul>
 
 	<?php
@@ -285,8 +343,11 @@ class BPLabs_Admin {
 
 	/**
 	 * Paypal donate button metabox
+	 *
+	 * @since 1.1
+	 * @param array $settings Plugin settings (from DB)
 	 */ 
-	function _paypal() {
+	function _paypal( $settings ) {
 	?>
 
 		<form action="https://www.paypal.com/cgi-bin/webscr" method="post">

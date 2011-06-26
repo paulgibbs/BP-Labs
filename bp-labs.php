@@ -94,7 +94,7 @@ class BPLabs {
 		if ( 'bp-labs/bp-labs.php' != $file )
 			return $links;
 
-		$settings_link = sprintf( '<a href="%s">%s</a>', network_admin_url( 'admin.php?page=bplabs' ), __( 'Settings', 'dpa' ) );
+		$settings_link = sprintf( '<a href="%s">%s</a>', network_admin_url( 'admin.php?page=bplabs' ), __( 'Settings', 'bpl' ) );
 		array_unshift( $links, $settings_link );
 
 		return $links;
@@ -106,20 +106,21 @@ class BPLabs {
 	 * @since 1.0
 	 */
 	protected function _include_experiments() {
+		$settings = get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true ) );
 		require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-beaker.php' );
 
-		if ( bp_is_active( 'activity' ) ) {
+		if ( bp_is_active( 'activity' ) && $settings['autosuggest'] ) {
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-autosuggest.php' );
+
+			//	require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-swish.php' );
+			// I bet you want to know what Swish is going to do.
+
 			//require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-lookingglass.php' );
 			// !defined( 'BP_DISABLE_ADMIN_BAR' ) || !BP_DISABLE_ADMIN_BAR
 		}
 
-		if ( bp_is_active( 'groups' ) )
+		if ( bp_is_active( 'groups' ) && $settings['quickadmin'] )
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-quickadmin.php' );
-
-		//if ( bp_is_active( 'activity' ) )
-		//	require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-swish.php' );
-		// I bet you want to know what Swish is going to do.
 
 		do_action( 'bplabs_include_experiments' );
 	}
