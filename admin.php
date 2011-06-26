@@ -55,9 +55,12 @@ class BPLabs_Admin {
 		add_meta_box( 'bpl-latest', __( 'Latest News', 'bpl' ), array( $this, '_metabox_latest_news' ), 'buddypress_page_bplabs_settings_metabox', 'side', 'default' );
 
 		// Support tab
-		add_meta_box( 'bpl-helpushelpyou', __( 'Help Us Help You', 'bpl' ),     array( $this, '_helpushelpyou'), 'buddypress_page_bplabs_support_metabox', 'side', 'default' );
+		add_meta_box( 'bpl-helpushelpyou', __( 'Help Me Help You', 'bpl' ),     array( $this, '_helpushelpyou'), 'buddypress_page_bplabs_support_metabox', 'side', 'default' );
 		add_meta_box( 'bpl-paypal', __( 'Give Kudos', 'bpl' ), array( $this, '_paypal' ), 'buddypress_page_bplabs_support_metabox', 'side', 'default' );
 		add_meta_box( 'bpl-latest', __( 'Latest News', 'bpl' ), array( $this, '_metabox_latest_news' ), 'buddypress_page_bplabs_support_metabox', 'side', 'default' );
+
+		wp_enqueue_script( 'nav-menu' );
+		wp_enqueue_script( 'postbox' );
 	}
 
 	/**
@@ -97,26 +100,31 @@ class BPLabs_Admin {
 			</h2>
 
 			<div id="poststuff" class="metabox-holder<?php echo 2 == $screen_layout_columns ? ' has-right-sidebar' : ''; ?>">
-				<div id="side-info-column" class="inner-sidebar">
-					<?php
-					if ( 'support' == $tab )
-						do_meta_boxes( 'buddypress_page_bplabs_support_metabox', 'side', $settings );
-					else
-						do_meta_boxes( 'buddypress_page_bplabs_settings_metabox', 'side', $settings );
-					?>
-				</div>
+				<form method="post" action="options.php" id="bpl-labs-form">
+					<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
+					<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ); ?>
 
-				<div id="post-body" class="has-sidebar">
-					<div id="post-body-content" class="has-sidebar-content">
+					<div id="side-info-column" class="inner-sidebar">
 						<?php
 						if ( 'support' == $tab )
-							$this->_admin_page_support();
+							do_meta_boxes( 'buddypress_page_bplabs_support_metabox', 'side', $settings );
 						else
-							$this->_admin_page_settings();
+							do_meta_boxes( 'buddypress_page_bplabs_settings_metabox', 'side', $settings );
 						?>
-					</div><!-- #post-body-content -->
-				</div><!-- #post-body -->
+					</div>
 
+					<div id="post-body" class="has-sidebar">
+						<div id="post-body-content" class="has-sidebar-content">
+							<?php
+							if ( 'support' == $tab )
+								$this->_admin_page_support();
+							else
+								$this->_admin_page_settings();
+							?>
+						</div><!-- #post-body-content -->
+					</div><!-- #post-body -->
+
+				</forum>
 			</div><!-- #poststuff -->
 		</div><!-- .wrap -->
 
@@ -169,7 +177,7 @@ class BPLabs_Admin {
 	}
 
 	/**
-	 * "Help Us Help You" metabox
+	 * "Help Me Help You" metabox
 	 *
 	 * @global wpdb $wpdb WordPress database object
 	 * @global string $wp_version WordPress version number
@@ -267,7 +275,7 @@ class BPLabs_Admin {
 		<ul>
 			<li><p><a href="http://wordpress.org/extend/plugins/bp-labs/"><?php _e( 'Give it a five star rating on WordPress.org', 'bpl' ) ?></a>.</p></li>
 			<li><p><a href="http://buddypress.org/community/groups/bp-labs/reviews/"><?php _e( 'Write a review on BuddyPress.org', 'bpl' ) ?></a>.</p></li>
-			<li><p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=P3K7Z7NHWZ5CL&amp;lc=GB&amp;item_name=B%2eY%2eO%2eT%2eO%2eS%20%2d%20BuddyPress%20plugins&amp;currency_code=GBP&amp;bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><?php _e( 'Thank me by donating towards future development', 'bpl' ) ?></a>.</p></li>
+			<li><p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=P3K7Z7NHWZ5CL&amp;lc=GB&amp;item_name=B%2eY%2eO%2eT%2eO%2eS%20%2d%20BuddyPress%20plugins&amp;currency_code=GBP&amp;bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><?php _e( 'Fund future experiments', 'bpl' ) ?></a>.</p></li>
 		</ul>
 
 	<?php
