@@ -38,16 +38,15 @@ This is a known issue because of how parts of BuddyPress 1.2.8's BP-Default them
 
 At the moment, only super admins are able to view the Quick Admin links. This will be addressed in a future version.
 
-= How do I enable only one of the experiments, or, where are the plugin's settings? =
-
-There are no plugin option panels yet. This will be addressed in a future version.
-
 == Screenshots ==
 
 1. @mentions autosuggest
 2. Quick Admin
 
 == Changelog ==
+
+= 1.1 =
+* Added options panel underneath the BuddyPress menu in WordPress admin.
 
 = 1.0 =
 * First version; with *@mentions autosuggest* and *Quick Admin*.
