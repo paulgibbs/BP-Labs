@@ -1,5 +1,5 @@
 /*!
- * jQuery @mentions plugin, v1.0
+ * jQuery @mentions plugin, v1.1
  *
  * Copyright 2011, Paul Gibbs <paul@byotos.com>.
  *
@@ -132,29 +132,40 @@
 					results.css('width', input_obj.outerWidth(false)-4).prepend('<li class="section ajaxloader"><p><span class="ajax-loader" style="display: inline"></span>' + BPMentions.searching + '</p></li>').show();
 				}
 
-				// Make ajax request
-				$.ajax({
-					dataType : o.dataType,
-					type     : 'POST',
-					url      : ajaxurl,
-					data     : {
-						'action' : 'activity_mention_autosuggest',
-						'cookie' : encodeURIComponent(document.cookie),
-						'format' : o.dataType,
-						'limit'  : o.max_suggestions,
-						'search' : query
-					},
+				// Are results cached?
+				var cache = results.data('bpl_' + query);
+				if (cache) {
+					receive_results(cache, 'success', null, query);
 
-					// Callbacks
-					error    : o.error,
-					success  : receive_results
-				});
+				} else {
+					// Make ajax request
+					$.ajax({
+						dataType : o.dataType,
+						type     : 'POST',
+						url      : ajaxurl,
+						data     : {
+							'action' : 'activity_mention_autosuggest',
+							'cookie' : encodeURIComponent(document.cookie),
+							'format' : o.dataType,
+							'limit'  : o.max_suggestions,
+							'search' : query
+						},
+
+						// Callbacks
+						error    : o.error,
+						success  : function(response, textStatus, jqXHR) { receive_results( response, textStatus, jqXHR, query ); }
+					});
+				}
 
 				previous_query = query;
 			}
 
 			// Data received from ajax request
-			function receive_results(response, textStatus, jqXHR) {
+			function receive_results(response, textStatus, jqXHR, searchQuery) {
+				if ('success' == textStatus) {
+					results.data('bpl_' + searchQuery, response);
+				}
+
 				// If you've asked for JSON, handle that in the success callback.
 				if ($.isFunction(o.success)) {
 					o.success.call(response, textStatus, jqXHR);
@@ -184,7 +195,7 @@
 
 							// Slide panel open if this is the first search
 							if (!results_started) {
-								results.slideUp('10000', function() {
+								results.slideUp('slow', function() {
 									results.html(response).slideDown('slow');
 								});
 

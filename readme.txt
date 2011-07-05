@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=P3K7Z
 Tags: buddypress,experimental
 Requires at least: WordPress 3.1, BuddyPress 1.2.8
 Tested up to: WordPress 3.2, BuddyPress 1.3
-Stable tag: 1.1
+Stable tag: 1.2
 
 BP Labs contains unofficial and experimental BuddyPress features for testing and feedback. Works best with BuddyPress 1.3.
 
@@ -44,6 +44,9 @@ At the moment, only super admins are able to view the Quick Admin links. This wi
 2. Quick Admin
 
 == Changelog ==
+
+= 1.2 =
+* Added caching to @mentions autosuggest; it speeds up multiple requests for the same query.
 
 = 1.1 =
 * Added options panel underneath the BuddyPress menu in WordPress admin.
