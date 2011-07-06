@@ -101,23 +101,37 @@ class BPLabs {
 	}
 
 	/**
+	 * Convenience function to retrieve the plugin's setting
+	 *
+	 * @since 1.2
+	 * @static
+	 */
+	static function get_settings() {
+		return get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true, 'akismet' => true ) );
+	}
+
+	/**
 	 * Include beakers; for science!
 	 *
 	 * @since 1.0
 	 */
 	protected function _include_experiments() {
-		$settings = get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true ) );
+		$settings = $this->get_settings();
 		require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-beaker.php' );
 
 		if ( bp_is_active( 'activity' ) && $settings['autosuggest'] ) {
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-autosuggest.php' );
-
-			//	require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-swish.php' );
-			// I bet you want to know what Swish is going to do.
-
-			//require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-lookingglass.php' );
-			// !defined( 'BP_DISABLE_ADMIN_BAR' ) || !BP_DISABLE_ADMIN_BAR
 		}
+
+		if ( bp_is_active( 'activity' ) && $settings['akismet'] ) {
+			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-akismet.php' );
+		}
+
+		//	require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-swish.php' );
+		// I bet you want to know what Swish is going to do.
+
+		//require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-lookingglass.php' );
+		// !defined( 'BP_DISABLE_ADMIN_BAR' ) || !BP_DISABLE_ADMIN_BAR
 
 		if ( bp_is_active( 'groups' ) && $settings['quickadmin'] )
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-quickadmin.php' );

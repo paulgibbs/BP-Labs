@@ -84,7 +84,7 @@ class BPLabs_Admin {
 
 		$updated  = $this->_maybe_save();
 		$url      = network_admin_url( 'admin.php?page=bplabs' );
-		$settings = get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true ) );
+		$settings = BPLabs::get_settings();
 	?>
 
 		<style type="text/css">
@@ -96,7 +96,8 @@ class BPLabs_Admin {
 			text-align: center;
 		}
 		.bpl_autosuggest,
-		.bpl_quickadmin {
+		.bpl_quickadmin,
+		.bpl_akismet {
 			margin-right: 2em;
 		}
 		</style>
@@ -105,8 +106,8 @@ class BPLabs_Admin {
 			<?php screen_icon( 'options-general' ); ?>
 
 			<h2 class="nav-tab-wrapper">
-				<a href="<?php echo esc_attr( $url ); ?>"                  class="nav-tab <?php if ( 'settings' == $tab ) : ?>nav-tab-active<?php endif; ?>"><?php _e( 'BP Labs', 'bpl' );     ?></a>
-				<a href="<?php echo esc_attr( $url . '&tab=support' ); ?>" class="nav-tab <?php if ( 'support' == $tab  ) : ?>nav-tab-active<?php endif; ?>"><?php _e( 'Get Support', 'bpl' ); ?></a>
+				<a href="<?php echo esc_attr( $url ); ?>"                      class="nav-tab <?php if ( 'settings' == $tab ) : ?>nav-tab-active<?php endif; ?>"><?php _e( 'BP Labs', 'bpl' );     ?></a>
+				<a href="<?php echo esc_attr( $url . '&amp;tab=support' ); ?>" class="nav-tab <?php if ( 'support' == $tab  ) : ?>nav-tab-active<?php endif; ?>"><?php _e( 'Get Support', 'bpl' ); ?></a>
 			</h2>
 
 			<div id="poststuff" class="metabox-holder<?php echo 2 == $screen_layout_columns ? ' has-right-sidebar' : ''; ?>">
@@ -174,6 +175,11 @@ class BPLabs_Admin {
 			<label><?php _e( 'On', 'bpl' ); ?> <input type="radio" name="bpl_quickadmin" class="bpl_quickadmin" value="on" <?php checked( $settings['quickadmin'] ); ?>/></label>
 			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_quickadmin" class="bpl_quickadmin" value="off" <?php checked( $settings['quickadmin'], false ); ?>/></label>
 
+			<h4><?php _e( 'Activity Akismet', 'bpl' ); ?></h4>
+			<p><?php printf( __( "Keep your Activity Stream minty-fresh with Automattic's Akismet spam filtering service; requires the <a href='%s'>Akismet WordPress plugin</a>.", 'bpl' ), 'http://wordpress.org/extend/plugins/akismet/' ); ?></p>
+			<label><?php _e( 'On', 'bpl' ); ?> <input type="radio" name="bpl_akismet" class="bpl_akismet" value="on" <?php checked( $settings['akismet'] ); ?>/></label>
+			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_akismet" class="bpl_akismet" value="off" <?php checked( $settings['akismet'], false ); ?>/></label>
+
 			<p><input type="submit" class="button-primary" value="<?php _e( 'Update Settings', 'bpl' ); ?>" /></p>
 		</form>
 
@@ -187,7 +193,7 @@ class BPLabs_Admin {
 	 * @since 1.1
 	 */
 	protected function _maybe_save() {
-		$settings = $existing_settings = get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true ) );
+		$settings = $existing_settings = BPLabs::get_settings();
 		$updated  = false;
 
 		if ( !empty( $_POST['bpl_autosuggest'] ) ) {
@@ -202,6 +208,13 @@ class BPLabs_Admin {
 				$settings['quickadmin'] = true;
 			else
 				$settings['quickadmin'] = false;
+		}
+
+		if ( !empty( $_POST['bpl_akismet'] ) ) {
+			if ( 'on' == $_POST['bpl_akismet'] )
+				$settings['akismet'] = true;
+			else
+				$settings['akismet'] = false;
 		}
 
 		if ( $settings != $existing_settings ) {
