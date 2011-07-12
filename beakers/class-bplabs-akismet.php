@@ -57,37 +57,15 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 		add_action( 'bp_activity_entry_comments',  array( $this, 'add_activity_stream_nonce' ) );
 
 		// Check for spam
-		add_action( 'bp_activity_before_save', array( $this, 'check_activity_item' ), 1, 1 );
+		add_action( 'bp_activity_after_save', array( $this, 'check_activity_item' ), 1, 1 );
 
 		//TODO: do 'update_post_meta' stuff
 	}
 
 	/**
-	 * Adds a nonce to the member profile status form, and to the reply form of each activity stream item.
-	 * This is used by Akismet to help detect spam activity.
-	 *
-	 * @global object $bp BuddyPress global settings
-	 * @see http://plugins.trac.wordpress.org/ticket/1232
-	 * @since 1.2
-	 */
-	function add_activity_stream_nonce() {
-		global $bp;
-
-		$form_id = '_bpla_as_nonce'; 
-		$value   = '_bpla_as_nonce_' . $bp->loggedin_user->id;
-
-		if ( 'bp_activity_entry_comments' == current_filter() ) {
-			$form_id .= '_' . bp_get_activity_id();
-			$value   .= '_' . bp_get_activity_id();
-		}
-
-		wp_nonce_field( $value, $form_id, false );
-	}
-
-	/**
 	 * Contact Akismet to check if this is spam or ham
 	 *
-	 * Credit to bbPress' Akismet implementation for most of this function
+	 * Credit to bbPress for some of the layout ideas in this function
 	 *
 	 * @global string $akismet_api_host
 	 * @global string $akismet_api_port
@@ -149,10 +127,11 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	}
 
 	/**
-	 * todo
+	 * Check if the activity item is spam or ham
 	 *
 	 * @global object $bp BuddyPress global settings
 	 * @param BP_Activity_Activity $activity The activity item to check
+	 * @return BP_Activity_Activity
 	 * @see http://akismet.com/development/api/
 	 * @since 1.2
 	 * @todo Spam counter?
@@ -170,7 +149,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 		$activity_data['comment_author_url']    = $userdata->user_url;
 		$activity_data['comment_content']       = $item->content;
 		$activity_data['comment_type']          = $item->type;
-		$activity_data['permalink']             = get activity item permalink();	
+		$activity_data['permalink']             = bp_activity_get_permalink( $activity->id, $activity );
 		$activity_data['user_ID']               = $userdata->ID;
 		$activity_data['user_role']             = akismet_get_user_roles( $userdata->ID );
 
@@ -182,7 +161,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 		// Spin the wheel; spam or ham?
 		$activity_data = $this->ask_akismet( $activity_data );
 
-		// Spam
+		// Spam!
 		if ( 'true' == $activity_data['bpla_result'] ) {
 			do_action( 'bpla_akismet_spam_caught', $activity, $activity_data );
 			//$post_data['post_status'] = nasty spam status;
@@ -190,6 +169,28 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 
 		$this->last_activity_item = $activity;
 		return $activity;
+	}
+
+	/**
+	 * Adds a nonce to the member profile status form, and to the reply form of each activity stream item.
+	 * This is used by Akismet to help detect spam activity.
+	 *
+	 * @global object $bp BuddyPress global settings
+	 * @see http://plugins.trac.wordpress.org/ticket/1232
+	 * @since 1.2
+	 */
+	function add_activity_stream_nonce() {
+		global $bp;
+
+		$form_id = '_bpla_as_nonce'; 
+		$value   = '_bpla_as_nonce_' . $bp->loggedin_user->id;
+
+		if ( 'bp_activity_entry_comments' == current_filter() ) {
+			$form_id .= '_' . bp_get_activity_id();
+			$value   .= '_' . bp_get_activity_id();
+		}
+
+		wp_nonce_field( $value, $form_id, false );
 	}
 }
 new BPLabs_Akismet();
