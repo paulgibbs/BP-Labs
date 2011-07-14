@@ -57,9 +57,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 		add_action( 'bp_activity_entry_comments',  array( $this, 'add_activity_stream_nonce' ) );
 
 		// Check for spam
-		add_action( 'bp_activity_after_save', array( $this, 'check_activity_item' ), 1, 1 );
-
-		//TODO: do 'update_post_meta' stuff
+		add_action( 'bp_activity_after_save', array( $this, 'check_activity' ), 1, 1 );
 	}
 
 	/**
@@ -74,7 +72,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 * @param string $spam spam|ham
 	 * @since 1.2
 	 */
-	private function ask_akismet( $activity_data, $check = 'check', $spam = 'spam' ) {
+	private function _ask_akismet( $activity_data, $check = 'check', $spam = 'spam' ) {
 		global $akismet_api_host, $akismet_api_port;
 
 		$query_string = $path = $response = '';
@@ -123,7 +121,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 		$response = akismet_http_post( $query_string, $akismet_api_host, $path, $akismet_api_port );
 		$activity_data['bpla_result'] = $response[1];
 
-		return $item_data;
+		return $activity_data;
 	}
 
 	/**
@@ -137,7 +135,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 * @todo Spam counter?
 	 * @todo Auto-delete old spam?
 	 */
-	protected function check_activity_item( $activity ) {
+	protected function check_activity( $activity ) {
 		global $akismet_api_host, $akismet_api_port, $bp;
 
 		$userdata = get_userdata( $activity->user_id );
@@ -147,8 +145,8 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 		$activity_data['comment_author']        = $userdata->display_name;
 		$activity_data['comment_author_email']  = $userdata->user_email;
 		$activity_data['comment_author_url']    = $userdata->user_url;
-		$activity_data['comment_content']       = $item->content;
-		$activity_data['comment_type']          = $item->type;
+		$activity_data['comment_content']       = $activity->content;
+		$activity_data['comment_type']          = $activity->type;
 		$activity_data['permalink']             = bp_activity_get_permalink( $activity->id, $activity );
 		$activity_data['user_ID']               = $userdata->ID;
 		$activity_data['user_role']             = akismet_get_user_roles( $userdata->ID );
@@ -159,16 +157,42 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 			$activity_data['akismet_comment_nonce'] = wp_verify_nonce( $_POST["_bpla_as_nonce_{$activity->id}"], "_bpla_as_nonce_{$userdata->ID}_{$activity->id}" ) ? 'passed' : 'failed';
 
 		// Spin the wheel; spam or ham?
-		$activity_data = $this->ask_akismet( $activity_data );
+		$activity_data = $this->_ask_akismet( $activity_data );
 
 		// Spam!
 		if ( 'true' == $activity_data['bpla_result'] ) {
 			do_action( 'bpla_akismet_spam_caught', $activity, $activity_data );
-			//$post_data['post_status'] = nasty spam status;
+			$this->mark_as_spam( $activity );
 		}
 
-		$this->last_activity_item = $activity;
 		return $activity;
+	}
+
+	/**
+	 * Mark activity item as spam
+	 *
+	 * @param BP_Activity_Activity $activity
+	 * @since 1.2
+	 */
+	protected function mark_as_spam( $activity ) {
+		bp_activity_update_meta( $activity->id, 'bpla-spam', true ) {
+		//todo: remove from activity stream?
+
+		do_action( 'bpla_akismet_mark_as_spam', $activity );
+	}
+
+	protected function mark_as_ham( $activity ) {
+	}
+
+	/**
+	 * Modify activity component queries to not return spam items, unless you're an administrator
+	 *
+	 * @see BPLabs_Akismet::register_actions
+	 * @since 1.2
+	 */
+	function filter_spam() {
+		//$activities = $wpdb->get_results( apply_filters( 'bp_activity_get_user_join_filter', $wpdb->prepare( "{$select_sql} {$from_sql} {$where_sql} ORDER BY a.date_recorded {$sort}", $select_sql, $from_sql, $where_sql, $sort ) ) );
+		//$total_activities_sql = apply_filters( 'bp_activity_total_activities_sql', $wpdb->prepare( "SELECT count(a.id) FROM {$bp->activity->table_name} a {$where_sql} ORDER BY a.date_recorded {$sort}" ), $where_sql, $sort );
 	}
 
 	/**
