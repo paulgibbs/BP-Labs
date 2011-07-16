@@ -58,6 +58,10 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 
 		// Check for spam
 		add_action( 'bp_activity_after_save', array( $this, 'check_activity' ), 1, 1 );
+
+		// Register filters to modify activity queries
+		add_action( 'bp_activity_get_user_join_filter', array( $this, 'filter_sql' ), 10, 5 );
+		add_action( 'bp_activity_total_activities_sql', array( $this, 'filter_sql_count' ), 10, 3 );
 	}
 
 	/**
@@ -165,7 +169,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 			$this->mark_as_spam( $activity );
 		}
 
-		return $activity;
+		return apply_filters( 'bpla_akismet_check_activity', $activity );
 	}
 
 	/**
@@ -173,10 +177,10 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 *
 	 * @param BP_Activity_Activity $activity
 	 * @since 1.2
+	 * @todo Remove from activity stream?
 	 */
 	protected function mark_as_spam( $activity ) {
 		bp_activity_update_meta( $activity->id, 'bpla-spam', true ) {
-		//todo: remove from activity stream?
 
 		do_action( 'bpla_akismet_mark_as_spam', $activity );
 	}
@@ -185,15 +189,53 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	}
 
 	/**
-	 * Modify activity component queries to not return spam items, unless you're an administrator
+	 * Modify activity component queries to not return spam items, unless you're an administrator (count SQL)
 	 *
+	 * @global $bp BuddyPress global settings
+	 * @param string $sql Original SQL
+	 * @param string $where_sql SQL "Where" part
+	 * @param string $sort SQL "Sort" part
+	 * @return string New SQL
 	 * @see BPLabs_Akismet::register_actions
 	 * @since 1.2
 	 */
-	function filter_spam() {
-		//$activities = $wpdb->get_results( apply_filters( 'bp_activity_get_user_join_filter', $wpdb->prepare( "{$select_sql} {$from_sql} {$where_sql} ORDER BY a.date_recorded {$sort}", $select_sql, $from_sql, $where_sql, $sort ) ) );
-		//$total_activities_sql = apply_filters( 'bp_activity_total_activities_sql', $wpdb->prepare( "SELECT count(a.id) FROM {$bp->activity->table_name} a {$where_sql} ORDER BY a.date_recorded {$sort}" ), $where_sql, $sort );
+	function filter_sql_count( $sql, $where_sql, $sort ) {
+		global $bp, $wpdb;
+
+		$sql = $wpdb->prepare( "SELECT count(a.id) FROM {$bp->activity->table_name} a, {$bp->activity->table_name_meta} m {$where_sql} AND m.activity_id = a.id AND m.meta_key != %s ORDER BY a.date_recorded {$sort}", 'bpla-spam' );
+		return apply_filters( 'bpla_akismet_filter_sql_count', $sql );
 	}
+
+	/**
+	 * Modify activity component queries to not return spam items, unless you're an administrator
+	 *
+	 * @global $bp BuddyPress global settings
+	 * @param string $sql Original SQL
+	 * @param string $where_sql SQL "Where" part
+	 * @param string $sort SQL "Sort" part
+	 * @return string New SQL
+	 * @see BPLabs_Akismet::register_actions
+	 * @since 1.2
+	 */
+	function filter_sql( $sql, $where_sql, $sort ) {
+		global $bp, $wpdb;
+
+		/*
+		if ( $per_page && $page ) {
+			$pag_sql = $wpdb->prepare( "LIMIT %d, %d", intval( ( $page - 1 ) * $per_page ), intval( $per_page ) );
+			$activities = $wpdb->get_results( apply_filters( 'bp_activity_get_user_join_filter', $wpdb->prepare( "{$select_sql} {$from_sql} {$where_sql} ORDER BY a.date_recorded {$sort} {$pag_sql}", $select_sql, $from_sql, $where_sql, $sort, $pag_sql ) ) );
+		} else {
+			$activities = $wpdb->get_results( apply_filters( 'bp_activity_get_user_join_filter', $wpdb->prepare( "{$select_sql} {$from_sql} {$where_sql} ORDER BY a.date_recorded {$sort}", $select_sql, $from_sql, $where_sql, $sort ) ) );
+		}
+		*/
+
+		$sql = '';
+		return apply_filters( 'bpla_akismet_filter_sql', $sql );
+	}
+
+	//apply_filters( 'bp_activity_get_user_join_filter', 
+	//  $wpdb->prepare( "{$select_sql} {$from_sql} {$where_sql} ORDER BY a.date_recorded {$sort}",
+	//  $select_sql, $from_sql, $where_sql, $sort ) )
 
 	/**
 	 * Adds a nonce to the member profile status form, and to the reply form of each activity stream item.
