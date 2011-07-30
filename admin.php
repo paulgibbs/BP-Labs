@@ -19,7 +19,7 @@ class BPLabs_Admin {
 	 *
 	 * @since 1.1
 	 */
-	function __construct() {
+	public function __construct() {
 		if ( function_exists( 'bp_core_admin_hook' ) )  // TODO: Update this when BuddyPress 1.3 is out
 			$admin_hook = bp_core_admin_hook();
 		elseif ( is_multisite() && ( !defined( 'BP_ENABLE_MULTIBLOG' ) || !BP_ENABLE_MULTIBLOG ) )
@@ -35,7 +35,7 @@ class BPLabs_Admin {
 	 *
 	 * @since 1.1
 	 */
-	function setup_menu() {
+	public function setup_menu() {
 		add_action( 'load-buddypress_page_bplabs', array( $this, 'init' ) );
 		add_submenu_page( 'bp-general-settings', __( 'BP Labs', 'bpl' ), __( 'Labs', 'bpl' ), 'manage_options', 'bplabs', array( $this, 'admin_page' ) );
 	}
@@ -43,10 +43,11 @@ class BPLabs_Admin {
 	/**
 	 * Initialise common elements for all pages of the admin screen.
 	 * Add metaboxes and contextual help to admin screen.
+	 * Add social media button javascript to page footer.
 	 *
 	 * @since 1.1
 	 */
-	function init() {
+	public function init() {
 		if ( empty( $_GET['tab'] ) )
 			$tab = 'settings';
 		else
@@ -56,16 +57,24 @@ class BPLabs_Admin {
 
 		// Support tab
 		if ( 'support' == $tab )
-			add_meta_box( 'bpl-helpushelpyou', __( 'Help Me Help You', 'bpl' ), array( $this, '_helpushelpyou'), 'buddypress_page_bplabs', 'side', 'high' );
+			add_meta_box( 'bpl-helpushelpyou', __( 'Help Me Help You', 'bpl' ), array( $this, 'helpushelpyou'), 'buddypress_page_bplabs', 'side', 'high' );
 		else
-			add_meta_box( 'bpl-likethis', __( 'Love BP Labs?', 'bpl' ), array( $this, '_like_this_plugin' ), 'buddypress_page_bplabs', 'side', 'default' );
+			add_meta_box( 'bpl-likethis', __( 'Love BP Labs?', 'bpl' ), array( $this, 'like_this_plugin' ), 'buddypress_page_bplabs', 'side', 'default' );
 
 		// Main tab
 		add_meta_box( 'bpl-paypal', __( 'Give Kudos', 'bpl' ), array( $this, '_paypal' ), 'buddypress_page_bplabs', 'side', 'default' );
-		add_meta_box( 'bpl-latest', __( 'Latest News', 'bpl' ), array( $this, '_metabox_latest_news' ), 'buddypress_page_bplabs', 'side', 'default' );
+		add_meta_box( 'bpl-latest', __( 'Latest News', 'bpl' ), array( $this, 'metabox_latest_news' ), 'buddypress_page_bplabs', 'side', 'default' );
 
 		wp_enqueue_script( 'postbox' );
 		wp_enqueue_script( 'dashboard' );
+		?>
+
+			<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+			  {parsetags: 'explicit'}
+			</script>
+			<script type="text/javascript">gapi.plusone.go();</script>
+
+		<?php
 	}
 
 	/**
@@ -74,7 +83,7 @@ class BPLabs_Admin {
 	 * @global int $screen_layout_columns Number of columns shown on this admin page
 	 * @since 1.1
 	 */
-	function admin_page() {
+	public function admin_page() {
 		global $screen_layout_columns;
 
 		if ( empty( $_GET['tab'] ) )
@@ -82,7 +91,7 @@ class BPLabs_Admin {
 		else
 			$tab = 'support';
 
-		$updated  = $this->_maybe_save();
+		$updated  = $this->maybe_save();
 		$url      = network_admin_url( 'admin.php?page=bplabs' );
 		$settings = BPLabs::get_settings();
 	?>
@@ -91,6 +100,14 @@ class BPLabs_Admin {
 		#bpl-helpushelpyou ul {
 			list-style: disc;
 			padding-left: 2em;
+		}
+		#bpl-likethis #___plusone_0,
+		#bpl-likethis .fb {
+			max-width: 49% !important;
+			width: 49% !important;
+		}
+		#bpl-likethis .fb {
+			height: 20px;
 		}
 		#bpl-paypal .inside {
 			text-align: center;
@@ -119,9 +136,9 @@ class BPLabs_Admin {
 					<div id="post-body-content" class="has-sidebar-content">
 						<?php
 						if ( 'support' == $tab )
-							$this->_admin_page_support();
+							$this->admin_page_support();
 						else
-							$this->_admin_page_settings( $settings, $updated );
+							$this->admin_page_settings( $settings, $updated );
 						?>
 					</div><!-- #post-body-content -->
 				</div><!-- #post-body -->
@@ -137,7 +154,7 @@ class BPLabs_Admin {
 	 *
 	 * @since 1.1
 	 */
-	protected function _admin_page_support() {
+	protected function admin_page_support() {
 	?>
 
 		<p><?php printf( __( "All of BP Labs' experiments are in <a href='%s'>beta</a>, and come with no guarantees. They work best with the latest versions of WordPress and BuddyPress.", 'bpl' ), 'http://en.wikipedia.org/wiki/Software_release_life_cycle#Beta' ); ?></p>
@@ -153,7 +170,7 @@ class BPLabs_Admin {
 	 * @param bool $updated Have settings been updated on the previous page submission?
 	 * @since 1.1
 	 */
-	protected function _admin_page_settings( $settings, $updated ) {
+	protected function admin_page_settings( $settings, $updated ) {
 	?>
 		<?php if ( $updated ) : ?>
 			<div id="message" class="updated below-h2"><p><?php _e( 'Your preferences have been updated.', 'bpl' ); ?></p></div>
@@ -192,7 +209,7 @@ class BPLabs_Admin {
 	 * @return bool Have settings been updated?
 	 * @since 1.1
 	 */
-	protected function _maybe_save() {
+	protected function maybe_save() {
 		$settings = $existing_settings = BPLabs::get_settings();
 		$updated  = false;
 
@@ -231,7 +248,7 @@ class BPLabs_Admin {
 	 * @param array $settings Plugin settings (from DB)
 	 * @since 1.1
 	 */
-	function _metabox_latest_news( $settings) {
+	public function metabox_latest_news( $settings) {
 		$rss = fetch_feed( 'http://feeds.feedburner.com/BYOTOS' );
 		if ( !is_wp_error( $rss ) ) {
 			$content = '<ul>';
@@ -257,11 +274,11 @@ class BPLabs_Admin {
 	 * @param array $settings Plugin settings (from DB)
 	 * @since 1.1
 	 */
-	function _helpushelpyou( $settings ) {
+	public function helpushelpyou( $settings ) {
 		global $wpdb, $wp_rewrite, $wp_version;
 
 		$active_plugins = array();
-		$all_plugins = apply_filters( 'all_plugins', get_plugins() );
+		$all_plugins    = apply_filters( 'all_plugins', get_plugins() );
 
 		foreach ( $all_plugins as $filename => $plugin ) {
 			if ( 'BP Labs' != $plugin['Name'] && 'BuddyPress' != $plugin['Name'] && is_plugin_active( $filename ) )
@@ -328,7 +345,7 @@ class BPLabs_Admin {
 		<h4><?php _e( 'Active Plugins', 'bpl' ); ?></h4>
 		<ul>
 			<?php foreach ( $active_plugins as $plugin ) : ?>
-				<li><?php echo $plugin; ?></li>
+				<li><?php echo esc_html( $plugin ); ?></li>
 			<?php endforeach; ?>
 		</ul>
 
@@ -341,7 +358,7 @@ class BPLabs_Admin {
 	 * @since 1.1
 	 * @param array $settings Plugin settings (from DB)
 	 */
-	function _like_this_plugin( $settings ) {
+	public function like_this_plugin( $settings ) {
 	?>
 
 		<p><?php _e( 'Why not do any or all of the following:', 'bpl' ) ?></p>
@@ -349,6 +366,10 @@ class BPLabs_Admin {
 			<li><p><a href="http://wordpress.org/extend/plugins/bp-labs/"><?php _e( 'Give it a five star rating on WordPress.org.', 'bpl' ) ?></a></p></li>
 			<li><p><a href="http://buddypress.org/community/groups/bp-labs/reviews/"><?php _e( 'Write a review on BuddyPress.org.', 'bpl' ) ?></a></p></li>
 			<li><p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=P3K7Z7NHWZ5CL&amp;lc=GB&amp;item_name=B%2eY%2eO%2eT%2eO%2eS%20%2d%20BuddyPress%20plugins&amp;currency_code=GBP&amp;bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><?php _e( 'Fund more experiments.', 'bpl' ) ?></a></p></li>
+			<li>
+				<g:plusone size="medium" href="http://wordpress.org/extend/plugins/bp-labs/"></g:plusone>
+				<iframe class="fb" allowTransparency="true" frameborder="0" scrolling="no" src="http://www.facebook.com/plugins/like.php?href=http://wordpress.org/extend/plugins/bp-labs/&amp;send=false&amp;layout=button_count&amp;width=90&amp;show_faces=false&amp;action=recommend&amp;colorscheme=light&amp;font=arial"></iframe>
+			</li>
 		</ul>
 
 	<?php
