@@ -23,7 +23,7 @@ abstract class BPLabs_Beaker {
 	 *
 	 * @since 1.0
 	 */
-	function __construct() {
+	public function __construct() {
 		if ( is_admin() )
 			return;
 
@@ -38,7 +38,7 @@ abstract class BPLabs_Beaker {
 	 *
 	 * @since 1.0
 	 */
-	function enqueue_script() {
+	public function enqueue_script() {
 	}
 
 	/**
@@ -46,7 +46,7 @@ abstract class BPLabs_Beaker {
 	 *
 	 * @since 1.0
 	 */
-	function enqueue_style() {
+	public function enqueue_style() {
 	}
 
 	/**

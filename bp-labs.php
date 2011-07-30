@@ -114,6 +114,7 @@ class BPLabs {
 	 * Include beakers; for science!
 	 *
 	 * @since 1.0
+	 * @todo Replace bp_is_active() with BP 1.5 equivalent when it's out.
 	 */
 	protected function _include_experiments() {
 		$settings = $this->get_settings();
@@ -126,9 +127,6 @@ class BPLabs {
 		if ( bp_is_active( 'activity' ) && $settings['akismet'] ) {
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-akismet.php' );
 		}
-
-		//	require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-swish.php' );
-		// I bet you want to know what Swish is going to do.
 
 		//require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-lookingglass.php' );
 		// !defined( 'BP_DISABLE_ADMIN_BAR' ) || !BP_DISABLE_ADMIN_BAR

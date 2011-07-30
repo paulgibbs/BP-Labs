@@ -9,7 +9,7 @@ if ( !defined( 'ABSPATH' ) )
 	exit;
 
 /**
- * Implements Activity Akismet
+ * Implements activity Akismet
  *
  * @since 1.2
  */
@@ -19,7 +19,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 *
 	 * @since 1.2
 	 */
-	function __construct() {
+	public function __construct() {
 		if ( is_admin() || !defined( 'AKISMET_VERSION' ) )
 			return;
 
@@ -38,7 +38,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 *
 	 * @since 1.2
 	 */
-	function enqueue_script() {
+	public function enqueue_script() {
 		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/js/akismet';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
@@ -60,8 +60,8 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 		add_action( 'bp_activity_after_save', array( $this, 'check_activity' ), 1, 1 );
 
 		// Register filters to modify activity queries
-		add_action( 'bp_activity_get_user_join_filter', array( $this, 'filter_sql' ), 10, 5 );
-		add_action( 'bp_activity_total_activities_sql', array( $this, 'filter_sql_count' ), 10, 3 );
+		add_filter( 'bp_activity_get_user_join_filter', array( $this, 'filter_sql' ), 10, 6 );
+		add_filter( 'bp_activity_total_activities_sql', array( $this, 'filter_sql_count' ), 10, 3 );
 	}
 
 	/**
@@ -76,7 +76,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 * @param string $spam spam|ham
 	 * @since 1.2
 	 */
-	private function _ask_akismet( $activity_data, $check = 'check', $spam = 'spam' ) {
+	private function ask_akismet( $activity_data, $check = 'check', $spam = 'spam' ) {
 		global $akismet_api_host, $akismet_api_port;
 
 		$query_string = $path = $response = '';
@@ -94,7 +94,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 
 		// Loop through _POST args and rekey strings
 		foreach ( $_POST as $key => $value )
-			if ( is_string( $value ) )
+			if ( is_string( $value ) && 'cookie' != $key )
 				$activity_data['POST_' . $key] = $value;
 
 		// Keys to ignore
@@ -131,22 +131,23 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	/**
 	 * Check if the activity item is spam or ham
 	 *
+	 * @global unknown $akismet_api_host
+	 * @global unknown $akismet_api_port
 	 * @global object $bp BuddyPress global settings
 	 * @param BP_Activity_Activity $activity The activity item to check
-	 * @return BP_Activity_Activity
 	 * @see http://akismet.com/development/api/
 	 * @since 1.2
 	 * @todo Spam counter?
 	 * @todo Auto-delete old spam?
 	 */
-	protected function check_activity( $activity ) {
+	public function check_activity( $activity ) {
 		global $akismet_api_host, $akismet_api_port, $bp;
 
 		$userdata = get_userdata( $activity->user_id );
 
 		$activity_data                          = array();
 		$activity_data['akismet_comment_nonce'] = 'inactive';
-		$activity_data['comment_author']        = $userdata->display_name;
+		$activity_data['comment_author']        = $userdata->display_name;  // 'viagra-test-123'
 		$activity_data['comment_author_email']  = $userdata->user_email;
 		$activity_data['comment_author_url']    = $userdata->user_url;
 		$activity_data['comment_content']       = $activity->content;
@@ -161,15 +162,13 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 			$activity_data['akismet_comment_nonce'] = wp_verify_nonce( $_POST["_bpla_as_nonce_{$activity->id}"], "_bpla_as_nonce_{$userdata->ID}_{$activity->id}" ) ? 'passed' : 'failed';
 
 		// Spin the wheel; spam or ham?
-		$activity_data = $this->_ask_akismet( $activity_data );
+		$activity_data = $this->ask_akismet( $activity_data );
 
 		// Spam!
 		if ( 'true' == $activity_data['bpla_result'] ) {
 			do_action( 'bpla_akismet_spam_caught', $activity, $activity_data );
 			$this->mark_as_spam( $activity );
 		}
-
-		return apply_filters( 'bpla_akismet_check_activity', $activity );
 	}
 
 	/**
@@ -180,7 +179,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 * @todo Remove from activity stream?
 	 */
 	protected function mark_as_spam( $activity ) {
-		//bp_activity_update_meta( $activity->id, 'bpla-spam', true ) {
+		bp_activity_update_meta( $activity->id, 'bpla_spam', true );
 
 		do_action( 'bpla_akismet_mark_as_spam', $activity );
 	}
@@ -199,10 +198,10 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 * @see BPLabs_Akismet::register_actions
 	 * @since 1.2
 	 */
-	function filter_sql_count( $sql, $where_sql, $sort ) {
+	public function filter_sql_count( $sql, $where_sql, $sort ) {
 		global $bp, $wpdb;
 
-		$sql = $wpdb->prepare( "SELECT count(a.id) FROM {$bp->activity->table_name} a, {$bp->activity->table_name_meta} m {$where_sql} AND m.activity_id = a.id AND m.meta_key != %s ORDER BY a.date_recorded {$sort}", 'bpla-spam' );
+		$sql = $wpdb->prepare( "SELECT count(a.id) FROM {$bp->activity->table_name} a LEFT JOIN {$bp->activity->table_name_meta} m ON m.activity_id = a.id {$where_sql} AND (m.meta_key != %s OR m.meta_key IS NULL) ORDER BY a.date_recorded {$sort}", 'bpla_spam' );
 		return apply_filters( 'bpla_akismet_filter_sql_count', $sql );
 	}
 
@@ -211,31 +210,28 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 *
 	 * @global $bp BuddyPress global settings
 	 * @param string $sql Original SQL
-	 * @param string $where_sql SQL "Where" part
-	 * @param string $sort SQL "Sort" part
+	 * @param string $select_sql
+	 * @param string $from_sql
+	 * @param string $where_sql
+	 * @param string $sort
+	 * @param string $pag_sql
 	 * @return string New SQL
 	 * @see BPLabs_Akismet::register_actions
 	 * @since 1.2
 	 */
-	function filter_sql( $sql, $where_sql, $sort ) {
+	public function filter_sql( $sql, $select_sql, $from_sql, $where_sql, $sort, $pag_sql='' ) {
 		global $bp, $wpdb;
 
-		/*
-		if ( $per_page && $page ) {
-			$pag_sql = $wpdb->prepare( "LIMIT %d, %d", intval( ( $page - 1 ) * $per_page ), intval( $per_page ) );
-			$activities = $wpdb->get_results( apply_filters( 'bp_activity_get_user_join_filter', $wpdb->prepare( "{$select_sql} {$from_sql} {$where_sql} ORDER BY a.date_recorded {$sort} {$pag_sql}", $select_sql, $from_sql, $where_sql, $sort, $pag_sql ) ) );
-		} else {
-			$activities = $wpdb->get_results( apply_filters( 'bp_activity_get_user_join_filter', $wpdb->prepare( "{$select_sql} {$from_sql} {$where_sql} ORDER BY a.date_recorded {$sort}", $select_sql, $from_sql, $where_sql, $sort ) ) );
-		}
-		*/
+		$from_sql  .= " LEFT JOIN {$bp->activity->table_name_meta} m ON m.activity_id = a.id";
+		$where_sql .= $wpdb->prepare( " AND (m.meta_key != %s OR m.meta_key IS NULL)", 'bpla_spam' );
 
-		$sql = '';
+		if ( !empty( $pag_sql ) )
+			$sql = $wpdb->prepare( "{$select_sql} {$from_sql} {$where_sql} ORDER BY a.date_recorded {$sort} {$pag_sql}" );
+		else
+			$sql = $wpdb->prepare( "{$select_sql} {$from_sql} {$where_sql} ORDER BY a.date_recorded {$sort}" );
+
 		return apply_filters( 'bpla_akismet_filter_sql', $sql );
 	}
-
-	//apply_filters( 'bp_activity_get_user_join_filter', 
-	//  $wpdb->prepare( "{$select_sql} {$from_sql} {$where_sql} ORDER BY a.date_recorded {$sort}",
-	//  $select_sql, $from_sql, $where_sql, $sort ) )
 
 	/**
 	 * Adds a nonce to the member profile status form, and to the reply form of each activity stream item.
@@ -244,8 +240,9 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 * @global object $bp BuddyPress global settings
 	 * @see http://plugins.trac.wordpress.org/ticket/1232
 	 * @since 1.2
+	 * @todo Replace $bp access with wrapper function in BP 1.5
 	 */
-	function add_activity_stream_nonce() {
+	public function add_activity_stream_nonce() {
 		global $bp;
 
 		$form_id = '_bpla_as_nonce'; 
