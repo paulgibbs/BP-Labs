@@ -180,7 +180,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 * @todo Remove from activity stream?
 	 */
 	protected function mark_as_spam( $activity ) {
-		bp_activity_update_meta( $activity->id, 'bpla-spam', true ) {
+		//bp_activity_update_meta( $activity->id, 'bpla-spam', true ) {
 
 		do_action( 'bpla_akismet_mark_as_spam', $activity );
 	}
