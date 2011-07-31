@@ -2,6 +2,8 @@
 /**
  * @package BP_Labs
  * @subpackage Akismet
+ *
+ * Credit to WordPress core's Akismet plugin for its implementation example.
  */
 
 // Exit if accessed directly
@@ -48,7 +50,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	}
 
 	/**
-	 * Register Akismet into the activity stream
+	 * Hook Akismet into the activity stream
 	 *
 	 * @since 1.2
 	 */
@@ -59,7 +61,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 		// Check for spam
 		add_action( 'bp_activity_after_save', array( $this, 'check_activity' ), 1, 1 );
 
-		// Register filters to modify activity queries
+		// Modify activity queries
 		add_filter( 'bp_activity_get_user_join_filter', array( $this, 'filter_sql' ), 10, 6 );
 		add_filter( 'bp_activity_total_activities_sql', array( $this, 'filter_sql_count' ), 10, 3 );
 	}
@@ -67,7 +69,8 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	/**
 	 * Contact Akismet to check if this is spam or ham
 	 *
-	 * Credit to bbPress for some of the layout ideas in this function
+	 * Credit to bbPress for the idea of splitting this part of the method out of check_activity(),
+	 * and to the WordPress core Akismet plugin for alot of the code.
 	 *
 	 * @global string $akismet_api_host
 	 * @global string $akismet_api_port
@@ -88,7 +91,6 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 		$activity_data['user_agent']   = $_SERVER['HTTP_USER_AGENT'];
 		$activity_data['user_ip']      = $_SERVER['REMOTE_ADDR'];
 
-		// Akismet test mode
 		if ( akismet_test_mode() )
 			$activity_data['is_test'] = 'true';
 
@@ -161,13 +163,14 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 		elseif ( !empty( $_POST['_bpla_as_nonce_' . $activity->id] ) )
 			$activity_data['akismet_comment_nonce'] = wp_verify_nonce( $_POST["_bpla_as_nonce_{$activity->id}"], "_bpla_as_nonce_{$userdata->ID}_{$activity->id}" ) ? 'passed' : 'failed';
 
-		// Spin the wheel; spam or ham?
+		// Check with Akismet to see if this is spam
 		$activity_data = $this->ask_akismet( $activity_data );
 
-		// Spam!
+		// Spam
 		if ( 'true' == $activity_data['bpla_result'] ) {
-			do_action( 'bpla_akismet_spam_caught', $activity, $activity_data );
 			$this->mark_as_spam( $activity );
+
+			do_action_ref_array( 'bpla_akismet_spam_caught', array( &$activity, $activity_data ) );
 		}
 	}
 
@@ -201,6 +204,9 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	public function filter_sql_count( $sql, $where_sql, $sort ) {
 		global $bp, $wpdb;
 
+		if ( !empty( $bp->loggedin_user->is_super_admin ) && $bp->loggedin_user->is_super_admin )
+			return $sql;
+
 		$sql = $wpdb->prepare( "SELECT count(a.id) FROM {$bp->activity->table_name} a LEFT JOIN {$bp->activity->table_name_meta} m ON m.activity_id = a.id {$where_sql} AND (m.meta_key != %s OR m.meta_key IS NULL) ORDER BY a.date_recorded {$sort}", 'bpla_spam' );
 		return apply_filters( 'bpla_akismet_filter_sql_count', $sql );
 	}
@@ -221,6 +227,9 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 */
 	public function filter_sql( $sql, $select_sql, $from_sql, $where_sql, $sort, $pag_sql='' ) {
 		global $bp, $wpdb;
+
+		if ( !empty( $bp->loggedin_user->is_super_admin ) && $bp->loggedin_user->is_super_admin )
+			return $sql;
 
 		$from_sql  .= " LEFT JOIN {$bp->activity->table_name_meta} m ON m.activity_id = a.id";
 		$where_sql .= $wpdb->prepare( " AND (m.meta_key != %s OR m.meta_key IS NULL)", 'bpla_spam' );
