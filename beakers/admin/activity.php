@@ -9,7 +9,7 @@ if ( !defined( 'ABSPATH' ) )
 	exit;
 
 /**
- * List table class for the Activity Akismet admin page.
+ * List table class for the Activity Stream Spam admin page.
  *
  * @since 1.2
  */
@@ -17,31 +17,53 @@ class BPLabs_Akismet_List_Table extends WP_List_Table {
 	/**
 	 * Constructor
 	 *
+	 * @global $bp BuddyPress global settings
 	 * @since 1.2
 	 */
 	function __construct() {
+		global $bp;
+
 		parent::__construct( array(
 			'ajax'     => false,
 			'plural'   => 'spammed_activities',
 			'singular' => 'spammed_activity',
 		) );
+
+		remove_filter( 'bp_get_activity_content_body', 'bp_activity_truncate_entry', 5 );
+		remove_filter( 'bp_get_activity_content_body', array( &$this, 'autoembed' ), 8 );
+		remove_filter( 'bp_get_activity_content_body', array( &$bp->embed, 'run_shortcode' ), 7 );
 	}
 
 	/**
-	 * Handle the XXXXXX column, and rollover actions.
+	 * Handle the display_name column
 	 *
 	 * @param array $item A singular item (one full row)
 	 * @return Column title
 	 * @see WP_List_Table::single_row_columns()
 	 * @since 1.2
 	 */
-	function column_type( $item ){
+	function column_display_name( $item ) {
+		return '<strong>' . get_avatar( $item['user_id'], '32' ) . ' ' . bp_core_get_userlink( $item['user_id'] ) . '</strong>';
+	}
+
+	/**
+	 * Handle the content column, and rollover actions.
+	 *
+	 * @param array $item A singular item (one full row)
+	 * @return Column title
+	 * @see WP_List_Table::single_row_columns()
+	 * @since 1.2
+	 */
+	function column_content( $item ) {
 		$actions = array(
-			'edit' => sprintf( '<a href="?page=%s&action=edit&SOMEPARAMETER=%d">Edit</a>', esc_attr( $_REQUEST['page'] ), (int) $item['id'] )
+			'permalink' => sprintf( '<a href="%s">%s</a>', bp_activity_get_permalink( $item['id'], (object) $item ), __( 'Permalink', 'bpl' ) ),
+			'notspam'   => sprintf( '<a href="%s">%s</a>', esc_attr( '' ), __( 'Not Spam', 'bpl' ) ),
 		);
 
-		$title = sprintf( '%s <span style="color:silver">(id:%d)</span>%s', esc_html( $item['type'] ), (int) $item['id'], $this->row_actions( $actions ) );
-		return $title;
+		$body    = apply_filters_ref_array( 'bp_get_activity_content_body', array( $item['content'] ) );
+		$content = esc_html( strip_tags( $body ) ) . ' ' . $this->row_actions( $actions );
+
+		return $content;
 	}
 
 	/**
@@ -64,33 +86,14 @@ class BPLabs_Akismet_List_Table extends WP_List_Table {
 	 * @return array Key/value pairs ('slug' => 'title')
 	 * @since 1.2
 	 */
-	function get_columns(){
+	function get_columns() {
 		$columns = array(
-		 'cb'    => '<input type="checkbox" />',
-
-			/* translators: Column header - name of activity items */
-		 'type' => __( 'typetype', 'bpl' )
+		 'cb'             => '<input type="checkbox" />',
+		 'display_name'   => __( 'Author', 'bpl' ),
+		 'content'        => __( 'Activity Item', 'bpl' )
 		);
 
 		return $columns;
-	}
-
-	/**
-	 * Get the sortable columns
-	 *
-	 * This returns an array where the key is the column that needs to be sortable, and the value is db column to 
-	 * sort by. The value is a column name from the database, not the list table. Actual sorting is handled in prepare_items().
-	 * 
-	 * @return array Key/value pairs ('slugs' => array( 'data_values', bool ))
-	 * @see BPLabs_Akismet_List_Table::prepare_items()
-	 * @since 1.2
-	 */
-	 function get_sortable_columns() {
-		$sortable_columns = array(
-			'type' => array( 'typetypetype', true )  // true means already sorted
-		);
-
-		return $sortable_columns;
 	}
 
 	/**
@@ -102,7 +105,7 @@ class BPLabs_Akismet_List_Table extends WP_List_Table {
 		function get_bulk_actions() {
 			$actions = array(
 				/* translators: Column header - name of activity items */
-				'delete' => __( 'Delete', 'bpl' )
+				'notspam' => __( 'Not Spam', 'bpl' )
 			);
 
 			return $actions;
@@ -118,18 +121,21 @@ class BPLabs_Akismet_List_Table extends WP_List_Table {
 		$per_page     = 20;
 
 		// Modify activity queries
-		remove_filter( 'bp_activity_get_user_join_filter', array( 'BPLabs_Akismet', 'filter_sql' ), 10, 6 );
-		remove_filter( 'bp_activity_total_activities_sql', array( 'BPLabs_Akismet', 'filter_sql_count' ), 10, 3 );
 		add_filter( 'bp_activity_get_user_join_filter', array( 'BPLabs_Akismet', 'filter_sql_for_spam' ), 10, 6 );
 		add_filter( 'bp_activity_total_activities_sql', array( 'BPLabs_Akismet', 'filter_sql_count_for_spam' ), 10, 3 );
 
 		$this->_column_headers = array( $this->get_columns(), array(), $this->get_sortable_columns() );
+
 		$data = bp_activity_get( array(
 			'display_comments' => 'threaded',
 			'page'             => $current_page,
 			'per_page'         => $per_page,
 			'show_hidden'      => true
 		) );
+
+		// Restore activity queries
+		remove_filter( 'bp_activity_get_user_join_filter', array( 'BPLabs_Akismet', 'filter_sql_for_spam' ), 10, 6 );
+		remove_filter( 'bp_activity_total_activities_sql', array( 'BPLabs_Akismet', 'filter_sql_count_for_spam' ), 10, 3 );
 
 		$total_items = (int) $data['total'];
 		$data        = $data['activities'];
@@ -178,19 +184,10 @@ function bplabs_akismet_table() {
 	$table->prepare_items();
 	?>
 
-	<div class="wrap">
-		<div id="icon-users" class="icon32"><br /></div>
-		<h2>List Table Test</h2>
-
-		<div style="background:#ECECEC;border:1px solid #CCC;padding:0 10px;margin-top:5px;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;">
-			<p>Additional class details are available on the <a href="http://codex.wordpress.org/Class_Reference/WP_List_Table" target="_blank" style="text-decoration:none;">WordPress Codex</a>.</p>
-		</div>
-
-		<form id="movies-filter" method="get">
+	<form id="bpl-akismet-filter" method="get">
 		<input type="hidden" name="page" value="<?php echo esc_attr( (int) $_REQUEST['page'] ); ?>" />
 		<?php $table->display(); ?>
-		</form>
-	</div>
+	</form>
 
 	<?php
 }

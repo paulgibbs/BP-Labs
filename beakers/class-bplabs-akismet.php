@@ -11,7 +11,7 @@ if ( !defined( 'ABSPATH' ) )
 	exit;
 
 /**
- * Implements activity Akismet
+ * Implements Activity Stream Spam
  *
  * @since 1.2
  */

@@ -134,7 +134,7 @@ class BPLabs_Admin {
 
 			<h2 class="nav-tab-wrapper">
 				<a href="<?php echo esc_attr( $url ); ?>"                       class="nav-tab <?php if ( 'settings' == $tab )  : ?>nav-tab-active<?php endif; ?>"><?php _e( 'BP Labs', 'bpl' );     ?></a>
-				<a href="<?php echo esc_attr( $url . '&amp;tab=activity' ); ?>" class="nav-tab <?php if ( 'activity' == $tab  ) : ?>nav-tab-active<?php endif; ?>"><?php _e( 'Activity Akismet', 'bpl' ); ?></a>
+				<a href="<?php echo esc_attr( $url . '&amp;tab=activity' ); ?>" class="nav-tab <?php if ( 'activity' == $tab  ) : ?>nav-tab-active<?php endif; ?>"><?php _e( 'Activity Stream Spam', 'bpl' ); ?></a>
 				<a href="<?php echo esc_attr( $url . '&amp;tab=support' ); ?>"  class="nav-tab <?php if ( 'support'  == $tab  ) : ?>nav-tab-active<?php endif; ?>"><?php _e( 'Get Support', 'bpl' ); ?></a>
 			</h2>
 
@@ -163,7 +163,7 @@ class BPLabs_Admin {
 	}
 
 	/**
-	 * Activity Akismet tab content for the admin page
+	 * Activity Stream Spam tab content for the admin page
 	 *
 	 * @since 1.2
 	 */
@@ -171,6 +171,22 @@ class BPLabs_Admin {
 		if ( !class_exists( 'WP_List_Table' ) )
 			require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 
+		?>
+
+		<style type="text/css">
+			table.spammed_activities td img {
+				float: left;
+				margin-right: 10px;
+			}
+			table.spammed_activities tr {
+				clear: left;
+			}
+			table.spammed_activities .notspam a {
+				color: #006505;
+			}
+		</style>
+
+		<?php
 		require( 'beakers/admin/activity.php' );
 	}
 
@@ -217,7 +233,7 @@ class BPLabs_Admin {
 			<label><?php _e( 'On', 'bpl' ); ?> <input type="radio" name="bpl_quickadmin" class="bpl_quickadmin" value="on" <?php checked( $settings['quickadmin'] ); ?>/></label>
 			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_quickadmin" class="bpl_quickadmin" value="off" <?php checked( $settings['quickadmin'], false ); ?>/></label>
 
-			<h4><?php _e( 'Activity Akismet', 'bpl' ); ?></h4>
+			<h4><?php _e( 'Activity Stream Spam', 'bpl' ); ?></h4>
 			<p><?php printf( __( "Keep your Activity Stream minty-fresh with Automattic's Akismet spam filtering service; requires the <a href='%s'>Akismet WordPress plugin</a> and version 1.5 of BuddyPress.", 'bpl' ), 'http://wordpress.org/extend/plugins/akismet/' ); ?></p>
 			<label><?php _e( 'On', 'bpl' ); ?> <input type="radio" name="bpl_akismet" class="bpl_akismet" value="on" <?php checked( $settings['akismet'] ); ?>/></label>
 			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_akismet" class="bpl_akismet" value="off" <?php checked( $settings['akismet'], false ); ?>/></label>
