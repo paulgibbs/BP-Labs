@@ -16,6 +16,8 @@ if ( !defined( 'ABSPATH' ) )
  * @since 1.2
  */
 class BPLabs_Akismet extends BPLabs_Beaker {
+	protected $last_spam_id = 0;
+
 	/**
 	 * Constructor.
 	 *
@@ -60,6 +62,9 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 
 		// Check for spam
 		add_action( 'bp_activity_after_save', array( $this, 'check_activity' ), 1, 1 );
+
+		// Tidy up member's latest (activity) update
+		add_action( 'bp_activity_posted_update', array( $this, 'check_member_activity_update' ), 1, 3 );
 
 		// Modify activity queries
 		add_filter( 'bp_activity_get_user_join_filter', array( $this, 'filter_sql' ), 10, 6 );
@@ -145,7 +150,8 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	public function check_activity( $activity ) {
 		global $akismet_api_host, $akismet_api_port, $bp;
 
-		$userdata = get_userdata( $activity->user_id );
+		$this->last_spam_id = 0;
+		$userdata           = get_userdata( $activity->user_id );
 
 		$activity_data                          = array();
 		$activity_data['akismet_comment_nonce'] = 'inactive';
@@ -175,6 +181,23 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	}
 
 	/**
+	 * Check if the member's latest (activity) update to see if it's the item that was been marked as spam.
+	 *
+	 * This can't be done in BPLabs_Akismet::check_activity() due to DTheme's AJAX implementation; see bp_dtheme_post_update().
+	 *
+	 * @param string $content
+	 * @param int $user_id
+	 * @param int $activity_id
+	 * @since 1.2
+	 */
+	public function check_member_activity_update( $content, $user_id, $activity_id ) {
+		if ( !$this->last_spam_id || $activity_id != $this->last_spam_id )
+			return;
+
+		bp_delete_user_meta( $user_id, 'bp_latest_update' );
+	}
+
+	/**
 	 * Mark activity item as spam
 	 *
 	 * @param BP_Activity_Activity $activity
@@ -182,7 +205,10 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 * @todo Remove from activity stream?
 	 */
 	protected function mark_as_spam( $activity ) {
+		$this->last_spam_id = $activity->id;
+
 		bp_activity_update_meta( $activity->id, 'bpla_spam', true );
+		bp_delete_user_meta( $activity->user_id, 'bp_latest_update' );
 
 		do_action( 'bpla_akismet_mark_as_spam', $activity );
 	}
