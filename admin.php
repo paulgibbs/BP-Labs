@@ -48,10 +48,15 @@ class BPLabs_Admin {
 	 * @since 1.1
 	 */
 	public function init() {
-		if ( empty( $_GET['tab'] ) )
+		if ( !empty( $_GET['tab'] ) ) {
+			if ( 'support' == $_GET['tab'] )
+				$tab = 'support';
+			elseif ( 'activity' == $_GET['tab'] && class_exists( 'BP_Component' ) )
+				$tab = 'activity';
+
+		}	else {
 			$tab = 'settings';
-		else
-			$tab = 'support';
+		}
 
 		add_screen_option( 'layout_columns', array( 'max' => 2 ) );
 
@@ -61,7 +66,7 @@ class BPLabs_Admin {
 		else
 			add_meta_box( 'bpl-likethis', __( 'Love BP Labs?', 'bpl' ), array( $this, 'like_this_plugin' ), 'buddypress_page_bplabs', 'side', 'default' );
 
-		// Main tab
+		// All tabs
 		add_meta_box( 'bpl-paypal', __( 'Give Kudos', 'bpl' ), array( $this, '_paypal' ), 'buddypress_page_bplabs', 'side', 'default' );
 		add_meta_box( 'bpl-latest', __( 'Latest News', 'bpl' ), array( $this, 'metabox_latest_news' ), 'buddypress_page_bplabs', 'side', 'default' );
 
@@ -86,10 +91,15 @@ class BPLabs_Admin {
 	public function admin_page() {
 		global $screen_layout_columns;
 
-		if ( empty( $_GET['tab'] ) )
+		if ( !empty( $_GET['tab'] ) ) {
+			if ( 'support' == $_GET['tab'] )
+				$tab = 'support';
+			elseif ( 'activity' == $_GET['tab'] && class_exists( 'BP_Component' ) )
+				$tab = 'activity';
+
+		}	else {
 			$tab = 'settings';
-		else
-			$tab = 'support';
+		}
 
 		$updated  = $this->maybe_save();
 		$url      = network_admin_url( 'admin.php?page=bplabs' );
@@ -123,8 +133,9 @@ class BPLabs_Admin {
 			<?php screen_icon( 'options-general' ); ?>
 
 			<h2 class="nav-tab-wrapper">
-				<a href="<?php echo esc_attr( $url ); ?>"                      class="nav-tab <?php if ( 'settings' == $tab ) : ?>nav-tab-active<?php endif; ?>"><?php _e( 'BP Labs', 'bpl' );     ?></a>
-				<a href="<?php echo esc_attr( $url . '&amp;tab=support' ); ?>" class="nav-tab <?php if ( 'support' == $tab  ) : ?>nav-tab-active<?php endif; ?>"><?php _e( 'Get Support', 'bpl' ); ?></a>
+				<a href="<?php echo esc_attr( $url ); ?>"                       class="nav-tab <?php if ( 'settings' == $tab )  : ?>nav-tab-active<?php endif; ?>"><?php _e( 'BP Labs', 'bpl' );     ?></a>
+				<a href="<?php echo esc_attr( $url . '&amp;tab=activity' ); ?>" class="nav-tab <?php if ( 'activity' == $tab  ) : ?>nav-tab-active<?php endif; ?>"><?php _e( 'Activity Akismet', 'bpl' ); ?></a>
+				<a href="<?php echo esc_attr( $url . '&amp;tab=support' ); ?>"  class="nav-tab <?php if ( 'support'  == $tab  ) : ?>nav-tab-active<?php endif; ?>"><?php _e( 'Get Support', 'bpl' ); ?></a>
 			</h2>
 
 			<div id="poststuff" class="metabox-holder<?php echo 2 == $screen_layout_columns ? ' has-right-sidebar' : ''; ?>">
@@ -137,6 +148,8 @@ class BPLabs_Admin {
 						<?php
 						if ( 'support' == $tab )
 							$this->admin_page_support();
+						elseif ( 'activity' == $tab )
+							$this->admin_page_activity();
 						else
 							$this->admin_page_settings( $settings, $updated );
 						?>
@@ -147,6 +160,18 @@ class BPLabs_Admin {
 		</div><!-- .wrap -->
 
 	<?php
+	}
+
+	/**
+	 * Activity Akismet tab content for the admin page
+	 *
+	 * @since 1.2
+	 */
+	protected function admin_page_activity() {
+		if ( !class_exists( 'WP_List_Table' ) )
+			require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+
+		require( 'beakers/admin/activity.php' );
 	}
 
 	/**
@@ -180,7 +205,7 @@ class BPLabs_Admin {
 			<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
 			<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ); ?>
 
-			<p><?php _e( 'BP Labs contains unofficial BuddyPress experiments which I am making available for testing, feedback, and to give people new shiny things for their websites.', 'bpl' ); ?></p>
+			<p><?php _e( 'BP Labs contains unofficial BuddyPress experiments which I am making available for testing, feedback, and to give people new shiny toys for their websites.', 'bpl' ); ?></p>
 
 			<h4><?php _e( '@mentions autosuggest', 'bpl' ); ?></h4>
 			<p><?php _e( '@mentions autosuggest requires the Activity Stream component, and extends its @messaging feature to help you find the short name of a user. It is integrated into comments, the "What\'s New" activity status box, Private Messaging (body) and bbPress forums. To trigger the autosuggest, type an @ followed by at least one other letter.', 'bpl' ); ?></p>
@@ -193,7 +218,7 @@ class BPLabs_Admin {
 			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_quickadmin" class="bpl_quickadmin" value="off" <?php checked( $settings['quickadmin'], false ); ?>/></label>
 
 			<h4><?php _e( 'Activity Akismet', 'bpl' ); ?></h4>
-			<p><?php printf( __( "Keep your Activity Stream minty-fresh with Automattic's Akismet spam filtering service; requires the <a href='%s'>Akismet WordPress plugin</a>.", 'bpl' ), 'http://wordpress.org/extend/plugins/akismet/' ); ?></p>
+			<p><?php printf( __( "Keep your Activity Stream minty-fresh with Automattic's Akismet spam filtering service; requires the <a href='%s'>Akismet WordPress plugin</a> and version 1.5 of BuddyPress.", 'bpl' ), 'http://wordpress.org/extend/plugins/akismet/' ); ?></p>
 			<label><?php _e( 'On', 'bpl' ); ?> <input type="radio" name="bpl_akismet" class="bpl_akismet" value="on" <?php checked( $settings['akismet'] ); ?>/></label>
 			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_akismet" class="bpl_akismet" value="off" <?php checked( $settings['akismet'], false ); ?>/></label>
 

@@ -67,8 +67,8 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 		add_action( 'bp_activity_posted_update', array( $this, 'check_member_activity_update' ), 1, 3 );
 
 		// Modify activity queries
-		add_filter( 'bp_activity_get_user_join_filter', array( $this, 'filter_sql' ), 10, 6 );
-		add_filter( 'bp_activity_total_activities_sql', array( $this, 'filter_sql_count' ), 10, 3 );
+		add_filter( 'bp_activity_get_user_join_filter', array( 'BPLabs_Akismet', 'filter_sql' ), 10, 6 );
+		add_filter( 'bp_activity_total_activities_sql', array( 'BPLabs_Akismet', 'filter_sql_count' ), 10, 3 );
 	}
 
 	/**
@@ -266,6 +266,50 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 			$sql = $wpdb->prepare( "{$select_sql} {$from_sql} {$where_sql} ORDER BY a.date_recorded {$sort}" );
 
 		return apply_filters( 'bpla_akismet_filter_sql', $sql );
+	}
+
+	/**
+	 * Modify activity component queries to return spam items
+	 *
+	 * @global $bp BuddyPress global settings
+	 * @param string $sql Original SQL
+	 * @param string $where_sql SQL "Where" part
+	 * @param string $sort SQL "Sort" part
+	 * @return string New SQL
+	 * @since 1.2
+	 */
+	public function filter_sql_count_for_spam( $sql, $where_sql, $sort ) {
+		global $bp, $wpdb;
+
+		$sql = $wpdb->prepare( "SELECT count(a.id) FROM {$bp->activity->table_name} a LEFT JOIN {$bp->activity->table_name_meta} m ON m.activity_id = a.id {$where_sql} AND m.meta_key = %s ORDER BY a.date_recorded {$sort}", 'bpla_spam' );
+		return apply_filters( 'bpla_akismet_filter_sql_count_for_spam', $sql );
+	}
+
+	/**
+	 * Modify activity component queries to return spam items
+	 *
+	 * @global $bp BuddyPress global settings
+	 * @param string $sql Original SQL
+	 * @param string $select_sql
+	 * @param string $from_sql
+	 * @param string $where_sql
+	 * @param string $sort
+	 * @param string $pag_sql
+	 * @return string New SQL
+	 * @since 1.2
+	 */
+	public function filter_sql_for_spam( $sql, $select_sql, $from_sql, $where_sql, $sort, $pag_sql='' ) {
+		global $bp, $wpdb;
+
+		$from_sql  .= " LEFT JOIN {$bp->activity->table_name_meta} m ON m.activity_id = a.id";
+		$where_sql .= $wpdb->prepare( " AND m.meta_key = %s", 'bpla_spam' );
+
+		if ( !empty( $pag_sql ) )
+			$sql = $wpdb->prepare( "{$select_sql} {$from_sql} {$where_sql} ORDER BY a.date_recorded {$sort} {$pag_sql}" );
+		else
+			$sql = $wpdb->prepare( "{$select_sql} {$from_sql} {$where_sql} ORDER BY a.date_recorded {$sort}" );
+
+		return apply_filters( 'bpla_akismet_filter_sql_for_spam', $sql );
 	}
 
 	/**

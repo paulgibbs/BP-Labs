@@ -124,12 +124,9 @@ class BPLabs {
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-autosuggest.php' );
 		}
 
-		if ( bp_is_active( 'activity' ) && $settings['akismet'] ) {
+		if ( bp_is_active( 'activity' ) && $settings['akismet'] && class_exists( 'BP_Component' ) ) {
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-akismet.php' );
 		}
-
-		//require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-lookingglass.php' );
-		// !defined( 'BP_DISABLE_ADMIN_BAR' ) || !BP_DISABLE_ADMIN_BAR
 
 		if ( bp_is_active( 'groups' ) && $settings['quickadmin'] )
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-quickadmin.php' );
