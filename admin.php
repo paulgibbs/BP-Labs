@@ -184,6 +184,9 @@ class BPLabs_Admin {
 			table.spammed_activities .notspam a {
 				color: #006505;
 			}
+			table.spammed_activities .column-date {
+				width: 10em;
+			}
 		</style>
 
 		<?php

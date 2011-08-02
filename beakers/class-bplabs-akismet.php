@@ -204,7 +204,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 * @since 1.2
 	 * @todo Remove from activity stream?
 	 */
-	protected function mark_as_spam( $activity ) {
+	public function mark_as_spam( $activity ) {
 		$this->last_spam_id = $activity->id;
 
 		bp_activity_update_meta( $activity->id, 'bpla_spam', true );
@@ -213,7 +213,17 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 		do_action( 'bpla_akismet_mark_as_spam', $activity );
 	}
 
-	protected function mark_as_ham( $activity ) {
+	/**
+	 * Mark activity item as ham
+	 *
+	 * @param BP_Activity_Activity $activity
+	 * @since 1.2
+	 * @todo Add to activity stream?
+	 */
+	public function mark_as_ham( $activity ) {
+		bp_activity_delete_meta( $activity->id, 'bpla_spam' );
+
+		do_action( 'bpla_akismet_mark_as_ham', $activity );
 	}
 
 	/**
