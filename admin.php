@@ -223,6 +223,7 @@ class BPLabs_Admin {
 		<form method="post" action="admin.php?page=bplabs" id="bpl-labs-form">
 			<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
 			<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ); ?>
+			<?php wp_nonce_field( 'bpl-admin', 'bpl-admin-nonce', false ); ?>
 
 			<p><?php _e( 'BP Labs contains unofficial BuddyPress experiments which I am making available for testing, feedback, and to give people new shiny toys for their websites.', 'bpl' ); ?></p>
 
@@ -279,6 +280,7 @@ class BPLabs_Admin {
 		}
 
 		if ( $settings != $existing_settings ) {
+			check_admin_referer( 'bpl-admin', 'bpl-admin-nonce' );
 			update_site_option( 'bplabs', $settings );
 			$updated = true;
 		}
