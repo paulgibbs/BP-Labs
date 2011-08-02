@@ -3,8 +3,8 @@ Contributors: DJPaul
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=P3K7Z7NHWZ5CL&lc=GB&item_name=B%2eY%2eO%2eT%2eO%2eS%20%2d%20BuddyPress%20plugins&currency_code=GBP&bn=PP%2dDon
 Tags: buddypress,experimental,akismet
 Requires at least: WordPress 3.1, BuddyPress 1.2.8
-Tested up to: WordPress 3.2, BuddyPress 1.3
-Stable tag: 1.2
+Tested up to: WordPress 3.2, BuddyPress 1.5
+Stable tag: 1.2-beta-1
 
 BP Labs contains unofficial and experimental BuddyPress features for testing and feedback. Works best with BuddyPress 1.3.
 
@@ -40,6 +40,9 @@ This is a known issue because of how parts of BuddyPress 1.2.9's BP-Default them
 
 At the moment, only super admins are able to view the Quick Admin links. This will be addressed in a future version.
 
+= How do I manually mark activity items as spam? =
+
+In 1.2-beta-1, you can't. Expect it in the full 1.2 release (soon).
 
 == Screenshots ==
 
@@ -49,9 +52,9 @@ At the moment, only super admins are able to view the Quick Admin links. This wi
 
 == Changelog ==
 
-= 1.2 =
+= 1.2-beta-1 =
 * Added caching to @mentions autosuggest; it speeds up multiple requests for the same query.
-* Added Activity Stream Spam experiment.
+* Added Activity Stream Spam experiment (requires BuddyPress 1.5).
 
 = 1.1 =
 * Added options panel underneath the BuddyPress menu in WordPress admin.

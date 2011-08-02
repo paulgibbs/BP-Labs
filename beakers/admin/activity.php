@@ -159,12 +159,7 @@ class BPLabs_Akismet_List_Table extends WP_List_Table {
 		foreach ( $data as $d )
 			$new_data[] = (array) $d;
 
-		$data = $new_data;
-
-		// Handle pagination
-		$data        = array_slice( $data, ( ( $current_page -1 ) * $per_page ), $per_page );
-		$this->items = $data;
-
+		$this->items = $new_data;
 		$this->set_pagination_args( array(
 			'per_page'    => $per_page,
 			'total_items' => $total_items,
