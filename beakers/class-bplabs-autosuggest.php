@@ -160,13 +160,13 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 				// Friends and other users
 				if ( 'friends' == $section || 'others' == $section ) {
 					if ( 'friends' == $section ) {
-						$html[] = sprintf( '<li class="section friends"><p>%s</p></li>', __( 'Your friends:', 'bpl' ) );
+						$html[] = sprintf( '<li class="section friends"><p>%s</p></li>', __( 'Your friends', 'bpl' ) );
 
 					} elseif ( 'others' == $section ) {
 						if ( !empty( $search_results['friends'] ) )
-							$html[] = sprintf( '<li class="section other"><p>%s</p></li>', sprintf( __( 'Other people on %s:', 'bpl' ), get_bloginfo( 'name', 'display' ) ) );
+							$html[] = sprintf( '<li class="section other"><p>%s</p></li>', sprintf( __( 'Other people on %s', 'bpl' ), get_bloginfo( 'name', 'display' ) ) );
 						else
-							$html[] = sprintf( '<li class="section other"><p>%s</p></li>', sprintf( __( 'People on %s:', 'bpl' ), get_bloginfo( 'name', 'display' ) ) );
+							$html[] = sprintf( '<li class="section other"><p>%s</p></li>', sprintf( __( 'People on %s', 'bpl' ), get_bloginfo( 'name', 'display' ) ) );
 					}
 
 					foreach ( $items as $item )
