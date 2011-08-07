@@ -57,7 +57,7 @@ class BPLabs {
 	 * @since 1.0
 	 * @static
 	 */
-	static function &init() {
+	public static function &init() {
 		static $instance = false;
 
 		if ( !$instance ) {
@@ -76,7 +76,7 @@ class BPLabs {
 	 * @global object $bp BuddyPress global settings
 	 * @since 1.0
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->_include_experiments();
 		$this->_load_admin_screen();
 
@@ -90,7 +90,7 @@ class BPLabs {
 	 * @param string $file Plugin's file name
 	 * @since 1.1
 	 */
-	function _add_settings_link( $links, $file ) {
+	public function _add_settings_link( $links, $file ) {
 		if ( 'bp-labs/bp-labs.php' != $file )
 			return $links;
 
@@ -106,7 +106,7 @@ class BPLabs {
 	 * @since 1.2
 	 * @static
 	 */
-	static function get_settings() {
+	public static function get_settings() {
 		return get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true, 'akismet' => true ) );
 	}
 
@@ -117,16 +117,14 @@ class BPLabs {
 	 * @todo Replace bp_is_active() with BP 1.5 equivalent when it's out.
 	 */
 	protected function _include_experiments() {
-		$settings = $this->get_settings();
+		$settings = BPLabs::get_settings();
 		require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-beaker.php' );
 
-		if ( bp_is_active( 'activity' ) && $settings['autosuggest'] ) {
+		if ( bp_is_active( 'activity' ) && $settings['autosuggest'] )
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-autosuggest.php' );
-		}
 
-		if ( bp_is_active( 'activity' ) && $settings['akismet'] && class_exists( 'BP_Component' ) ) {
+		if ( bp_is_active( 'activity' ) && $settings['akismet'] && class_exists( 'BP_Component' ) )  // BP 1.5+
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-akismet.php' );
-		}
 
 		if ( bp_is_active( 'groups' ) && $settings['quickadmin'] )
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-quickadmin.php' );

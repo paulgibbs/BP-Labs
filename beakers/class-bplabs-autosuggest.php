@@ -19,7 +19,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 	 *
 	 * @since 1.0
 	 */
-	function enqueue_script() {
+	public function enqueue_script() {
 		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/js/jquery.mentions';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
@@ -47,7 +47,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 	 *
 	 * @since 1.0
 	 */
-	function enqueue_style() {
+	public function enqueue_style() {
 		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/css/jquery.mentions';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
@@ -72,9 +72,8 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 	 * @return mixed Either HTML or JSON. If error, "-1" for missing parameters, "0" for no matches.
 	 * @see bp-labs/beakers/js/jquery.mentions.dev.js
 	 * @since 1.0
-	 * @static
 	 */
-	static function mention_autosuggest() {
+	 public function mention_autosuggest() {
 		global $bp;
 
 		if ( empty( $_POST['limit'] ) || empty( $_POST['search'] ) )

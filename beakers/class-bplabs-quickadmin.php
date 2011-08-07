@@ -28,7 +28,7 @@ class BPLabs_Quickadmin extends BPLabs_Beaker {
 	 *
 	 * @since 1.0
 	 */
-	function enqueue_style() {
+	public function enqueue_style() {
 		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/css/quickadmin';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
@@ -42,10 +42,9 @@ class BPLabs_Quickadmin extends BPLabs_Beaker {
 	 *
 	 * @global $bp BuddyPress global settings
 	 * @since 1.0
-	 * @static
 	 * @todo Make this work for more than just super admins.
 	 */
-	static function make_links() {
+	public function make_links() {
 		global $bp;
 
 		if ( empty( $bp->loggedin_user->id ) || !$bp->loggedin_user->is_super_admin )

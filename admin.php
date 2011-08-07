@@ -253,8 +253,9 @@ class BPLabs_Admin {
 	 *
 	 * @return bool Have settings been updated?
 	 * @since 1.1
+	 * @static
 	 */
-	protected function maybe_save() {
+	protected static function maybe_save() {
 		$settings = $existing_settings = BPLabs::get_settings();
 		$updated  = false;
 
