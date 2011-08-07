@@ -125,6 +125,11 @@
 					o.start.call(this, query);
 				}
 
+				// BP DTheme 1.5 workaround for the "what's new" box
+				if ( 'whats-new-options' == $(o.resultsbox).attr('id') && 'inherit' != $(o.resultsbox).css('overflow') ) {
+					$(o.resultsbox).css('overflow', 'inherit');
+				}
+
 				if (!results_started) {
 					results.css('width', input_obj.outerWidth(false)-4).html('<li class="section ajaxloader"><p><span class="ajax-loader" style="display: inline"></span>' + BPMentions.searching + '</p></li>').show();
 				} else {
