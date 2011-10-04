@@ -59,7 +59,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	protected function register_actions() {
 		add_action( 'bp_after_activity_post_form', array( $this, 'add_activity_stream_nonce' ) );
 		add_action( 'bp_activity_entry_comments',  array( $this, 'add_activity_stream_nonce' ) );
-		add_action( 'bp_activity_entry_meta',      array( $this, 'add_activity_spam_button'  ) );
+//		add_action( 'bp_activity_entry_meta',      array( $this, 'add_activity_spam_button'  ) );
 
 		// Check for spam
 		add_action( 'bp_activity_after_save', array( $this, 'check_activity' ), 1, 1 );
@@ -330,7 +330,6 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 	 * @global object $bp BuddyPress global settings
 	 * @see http://plugins.trac.wordpress.org/ticket/1232
 	 * @since 1.2
-	 * @todo Replace $bp access with wrapper function in BP 1.5
 	 */
 	public function add_activity_stream_nonce() {
 		global $bp;
@@ -376,7 +375,7 @@ class BPLabs_Akismet extends BPLabs_Beaker {
 		$activity_id = bp_get_activity_id();
 		$url         = wp_nonce_url( add_query_arg( array( 'action' => 'spam', 'activity_id' => $activity_id ) ), 'bpl_akismet_spam_' . $activity_id );
 
-		printf( '<a href="%s" class="button item-button bp-secondary-action spam-activity confirm" rel="nofollow">%s</a>', $url, __( 'Spam This', 'bpl' ) );
+		printf( '<a href="%s" class="button item-button bp-secondary-action spam-activity confirm" rel="nofollow">%s</a>', $url, __( 'Spam This!', 'bpl' ) );
 	}
 }
 

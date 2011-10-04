@@ -20,14 +20,7 @@ class BPLabs_Admin {
 	 * @since 1.1
 	 */
 	public function __construct() {
-		if ( function_exists( 'bp_core_admin_hook' ) )  // TODO: Update this when BuddyPress 1.3 is out
-			$admin_hook = bp_core_admin_hook();
-		elseif ( is_multisite() && ( !defined( 'BP_ENABLE_MULTIBLOG' ) || !BP_ENABLE_MULTIBLOG ) )
-			$admin_hook = 'network_admin_menu';
-		else
-			$admin_hook = 'admin_menu';
-
-		add_action( $admin_hook, array( $this, 'setup_menu' ) );
+		add_action( bp_core_admin_hook(), array( $this, 'setup_menu' ) );
 	}
 
 	/**
@@ -36,8 +29,8 @@ class BPLabs_Admin {
 	 * @since 1.1
 	 */
 	public function setup_menu() {
-		add_action( 'load-buddypress_page_bplabs', array( $this, 'init' ) );
-		add_submenu_page( 'bp-general-settings', __( 'BP Labs', 'bpl' ), __( 'Labs', 'bpl' ), 'manage_options', 'bplabs', array( $this, 'admin_page' ) );
+		add_action( 'load-settings_page_bplabs', array( $this, 'init' ) );
+		add_options_page( __( 'BP Labs', 'bpl' ), __( 'BP Labs', 'bpl' ), 'manage_options', 'bplabs', array( $this, 'admin_page' ) );
 	}
 
 	/**
@@ -62,13 +55,13 @@ class BPLabs_Admin {
 
 		// Support tab
 		if ( 'support' == $tab )
-			add_meta_box( 'bpl-helpushelpyou', __( 'Help Me Help You', 'bpl' ), array( $this, 'helpushelpyou'), 'buddypress_page_bplabs', 'side', 'high' );
+			add_meta_box( 'bpl-helpushelpyou', __( 'Help Me Help You', 'bpl' ), array( $this, 'helpushelpyou'), 'settings_page_bplabs', 'side', 'high' );
 		else
-			add_meta_box( 'bpl-likethis', __( 'Love BP Labs?', 'bpl' ), array( $this, 'like_this_plugin' ), 'buddypress_page_bplabs', 'side', 'default' );
+			add_meta_box( 'bpl-likethis', __( 'Love BP Labs?', 'bpl' ), array( $this, 'like_this_plugin' ), 'settings_page_bplabs', 'side', 'default' );
 
 		// All tabs
-		add_meta_box( 'bpl-paypal', __( 'Give Kudos', 'bpl' ), array( $this, '_paypal' ), 'buddypress_page_bplabs', 'side', 'default' );
-		add_meta_box( 'bpl-latest', __( 'Latest News', 'bpl' ), array( $this, 'metabox_latest_news' ), 'buddypress_page_bplabs', 'side', 'default' );
+		add_meta_box( 'bpl-paypal', __( 'Give Kudos', 'bpl' ), array( $this, '_paypal' ), 'settings_page_bplabs', 'side', 'default' );
+		add_meta_box( 'bpl-latest', __( 'Latest News', 'bpl' ), array( $this, 'metabox_latest_news' ), 'settings_page_bplabs', 'side', 'default' );
 
 		wp_enqueue_script( 'postbox' );
 		wp_enqueue_script( 'dashboard' );
@@ -140,7 +133,7 @@ class BPLabs_Admin {
 
 			<div id="poststuff" class="metabox-holder<?php echo 2 == $screen_layout_columns ? ' has-right-sidebar' : ''; ?>">
 				<div id="side-info-column" class="inner-sidebar">
-					<?php do_meta_boxes( 'buddypress_page_bplabs', 'side', $settings ); ?>
+					<?php do_meta_boxes( 'settings_page_bplabs', 'side', $settings ); ?>
 				</div>
 
 				<div id="post-body" class="has-sidebar">

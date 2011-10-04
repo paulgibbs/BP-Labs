@@ -127,7 +127,7 @@
 
 				// BP DTheme 1.5 workaround for the "what's new" box
 				if ( 'whats-new-options' == $(o.resultsbox).attr('id') && 'inherit' != $(o.resultsbox).css('overflow') ) {
-					$(o.resultsbox).css('overflow', 'inherit');
+					$(o.resultsbox).css('overflow', 'inherit').css('position', 'relative').css('z-index', '100');
 				}
 
 				if (!results_started) {

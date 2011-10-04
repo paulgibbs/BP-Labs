@@ -93,7 +93,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 		if ( !empty( $bp->loggedin_user->id ) )
 			$args['exclude'] = array( $bp->loggedin_user->id );
 
-		if ( defined( 'BP_ENABLE_USERNAME_COMPATIBILITY_MODE' ) ) {
+		if ( bp_is_username_compatibility_mode() ) {
 			$args['fields']  = array( 'ID', 'user_login' );
 			$args['orderby'] = 'login';
 
@@ -132,7 +132,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 			$result->avatar = bp_core_fetch_avatar( array( 'item_id' => $user->ID, 'width' => 30, 'height' => 30, 'type' => 'thumb', 'alt' => __( 'Profile picture of %s', 'bpl' ) ) );
 			$result->name   = bp_core_get_user_displayname( $user->ID );
 
-			if ( defined( 'BP_ENABLE_USERNAME_COMPATIBILITY_MODE' ) )
+			if ( bp_is_username_compatibility_mode() )
 			 	$result->id = $user->user_login;
 			else
 			 	$result->id = $user->user_nicename;

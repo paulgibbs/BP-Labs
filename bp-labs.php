@@ -3,7 +3,7 @@
  * Plugin Name: BP Labs
  * Plugin URI: http://buddypress.org/community/groups/bp-labs/
  * Description: BP Labs contains unofficial and experimental BuddyPress features for testing and feedback. Cake, and grief counselling, will be available at the conclusion of the plugin.
- * Version: 1.2
+ * Version: 1.2.2
  * Author: Paul Gibbs
  * Author URI: http://byotos.com
  * Network: true
@@ -40,7 +40,7 @@ if ( !defined( 'ABSPATH' ) )
 /**
  * Version number
  */
-define ( 'BP_LABS_VERSION', '1.2' );
+define ( 'BP_LABS_VERSION', '1.2.2' );
 
 /**
  * Welcome to the main BP Labs class. Anything and everything happens in here, come on in!
@@ -114,7 +114,6 @@ class BPLabs {
 	 * Include beakers; for science!
 	 *
 	 * @since 1.0
-	 * @todo Replace bp_is_active() with BP 1.5 equivalent when it's out.
 	 */
 	protected function _include_experiments() {
 		$settings = BPLabs::get_settings();

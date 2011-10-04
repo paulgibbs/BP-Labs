@@ -2,11 +2,11 @@
 Contributors: DJPaul
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=P3K7Z7NHWZ5CL&lc=GB&item_name=B%2eY%2eO%2eT%2eO%2eS%20%2d%20BuddyPress%20plugins&currency_code=GBP&bn=PP%2dDon
 Tags: buddypress,experimental,akismet
-Requires at least: WordPress 3.1, BuddyPress 1.2.8
-Tested up to: WordPress 3.2, BuddyPress 1.5
-Stable tag: 1.2-beta-1
+Requires at least: WordPress 3.1, BuddyPress 1.5
+Tested up to: WordPress 3.2.1, BuddyPress 1.5
+Stable tag: 1.2.2
 
-BP Labs contains unofficial and experimental BuddyPress features for testing and feedback. Works best with BuddyPress 1.3.
+BP Labs contains unofficial and experimental BuddyPress features for testing and feedback. Requires BuddyPress 1.5+.
 
 == Description ==
 
@@ -32,17 +32,13 @@ Remember, these are my own unofficial experiments for BuddyPress which I am maki
 
 For help, or to report bugs, visit the [support forum](http://buddypress.org/community/groups/bp-labs/ "support forum").
 
-= I am using BuddyPress 1.2.9 with the BP-Default theme, and @mentions autosuggest looks strange =
-
-This is a known issue because of how parts of BuddyPress 1.2.9's BP-Default theme are written. To solution is to upgrade to BuddyPress 1.3.
-
 = I've created a group, and Quick Admin links aren't appearing in the directory =
 
 At the moment, only super admins are able to view the Quick Admin links. This will be addressed in a future version.
 
 = How do I manually mark activity items as spam? =
 
-In 1.2-beta-1, you can't. Expect it in the full 1.2 release (soon).
+You can't, yet. Expect to see it in a future release.
 
 == Screenshots ==
 
@@ -51,6 +47,9 @@ In 1.2-beta-1, you can't. Expect it in the full 1.2 release (soon).
 3. Activity Stream Spam
 
 == Changelog ==
+
+= 1.2.2 =
+* BuddyPress 1.5 compatibility.
 
 = 1.2-beta-1 =
 * Added caching to @mentions autosuggest; it speeds up multiple requests for the same query.
