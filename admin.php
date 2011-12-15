@@ -44,8 +44,6 @@ class BPLabs_Admin {
 		if ( !empty( $_GET['tab'] ) ) {
 			if ( 'support' == $_GET['tab'] )
 				$tab = 'support';
-			elseif ( 'activity' == $_GET['tab'] && class_exists( 'BP_Component' ) )
-				$tab = 'activity';
 
 		}	else {
 			$tab = 'settings';
@@ -87,8 +85,6 @@ class BPLabs_Admin {
 		if ( !empty( $_GET['tab'] ) ) {
 			if ( 'support' == $_GET['tab'] )
 				$tab = 'support';
-			elseif ( 'activity' == $_GET['tab'] && class_exists( 'BP_Component' ) )
-				$tab = 'activity';
 
 		}	else {
 			$tab = 'settings';
@@ -126,7 +122,6 @@ class BPLabs_Admin {
 
 			<h2 class="nav-tab-wrapper">
 				<a href="<?php echo esc_attr( $url ); ?>"                       class="nav-tab <?php if ( 'settings' == $tab )  : ?>nav-tab-active<?php endif; ?>"><?php _e( 'BP Labs', 'bpl' );     ?></a>
-				<a href="<?php echo esc_attr( $url . '&amp;tab=activity' ); ?>" class="nav-tab <?php if ( 'activity' == $tab  ) : ?>nav-tab-active<?php endif; ?>"><?php _e( 'Activity Stream Spam', 'bpl' ); ?></a>
 				<a href="<?php echo esc_attr( $url . '&amp;tab=support' ); ?>"  class="nav-tab <?php if ( 'support'  == $tab  ) : ?>nav-tab-active<?php endif; ?>"><?php _e( 'Get Support', 'bpl' ); ?></a>
 			</h2>
 
@@ -140,8 +135,6 @@ class BPLabs_Admin {
 						<?php
 						if ( 'support' == $tab )
 							$this->admin_page_support();
-						elseif ( 'activity' == $tab )
-							$this->admin_page_activity();
 						else
 							$this->admin_page_settings( $settings, $updated );
 						?>
@@ -152,37 +145,6 @@ class BPLabs_Admin {
 		</div><!-- .wrap -->
 
 	<?php
-	}
-
-	/**
-	 * Activity Stream Spam tab content for the admin page
-	 *
-	 * @since 1.2
-	 */
-	protected function admin_page_activity() {
-		if ( !class_exists( 'WP_List_Table' ) )
-			require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
-
-		?>
-
-		<style type="text/css">
-			table.spammed_activities td img {
-				float: left;
-				margin-right: 10px;
-			}
-			table.spammed_activities tr {
-				clear: left;
-			}
-			table.spammed_activities .notspam a {
-				color: #006505;
-			}
-			table.spammed_activities .column-date {
-				width: 10em;
-			}
-		</style>
-
-		<?php
-		require( 'beakers/admin/activity.php' );
 	}
 
 	/**

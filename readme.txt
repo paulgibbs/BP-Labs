@@ -10,7 +10,7 @@ BP Labs contains unofficial and experimental BuddyPress features for testing and
 
 == Description ==
 
-BP Labs contains three unofficial BuddyPress experiments; *@mentions autosuggest*, *Quick Admin*, and *Activity Stream Spam*. All experiments are in beta, and come with no guarantees.
+BP Labs contains three unofficial BuddyPress experiments; *@mentions autosuggest* and *Quick Admin*. All experiments are in beta, and come with no guarantees.
 
 *@mentions autosuggest* requires the Activity Stream component, and extends its @messaging feature to help you find the short name of a user. It is integrated into comments, the "What's New" activity status box, Private Messaging (body) and bbPress forums. To trigger the autosuggest, type an `@` followed by at least one other letter.
 For example, to mention to Paul Gibbs, you could type `@Paul G`, and it will show a list of users who match. You can then select one of these users, and their short name will be added to the text area (even if Paul's short name is `paulgibbs`).
@@ -34,17 +34,19 @@ For help, or to report bugs, visit the [support forum](http://buddypress.org/com
 
 At the moment, only super admins are able to view the Quick Admin links. This will be addressed in a future version.
 
-= How do I manually mark activity items as spam? =
+= What happened to the Akismet anti-spam experiment? =
 
-You can't, yet. Expect to see it in a future release.
+It got merged into BuddyPress 1.6! Woohoo!
 
 == Screenshots ==
 
 1. @mentions autosuggest
 2. Quick Admin
-3. Activity Stream Spam
 
 == Changelog ==
+
+= 1.3 =
+* Akismet support removed as that got merged into BuddyPress 1.6! Woohoo!
 
 = 1.2.2 =
 * BuddyPress 1.5 compatibility.
