@@ -3,7 +3,7 @@
  * Plugin Name: BP Labs
  * Plugin URI: http://buddypress.org/community/groups/bp-labs/
  * Description: BP Labs contains unofficial and experimental BuddyPress features for testing and feedback. Cake, and grief counselling, will be available at the conclusion of the plugin.
- * Version: 1.2.2
+ * Version: 1.3
  * Author: Paul Gibbs
  * Author URI: http://byotos.com
  * Network: true
@@ -40,7 +40,7 @@ if ( !defined( 'ABSPATH' ) )
 /**
  * Version number
  */
-define ( 'BP_LABS_VERSION', '1.2.2' );
+define ( 'BP_LABS_VERSION', '1.3' );
 
 /**
  * Welcome to the main BP Labs class. Anything and everything happens in here, come on in!
@@ -107,7 +107,7 @@ class BPLabs {
 	 * @static
 	 */
 	public static function get_settings() {
-		return get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true, 'akismet' => true ) );
+		return get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true, ) );
 	}
 
 	/**
@@ -121,9 +121,6 @@ class BPLabs {
 
 		if ( bp_is_active( 'activity' ) && $settings['autosuggest'] )
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-autosuggest.php' );
-
-		if ( bp_is_active( 'activity' ) && $settings['akismet'] && class_exists( 'BP_Component' ) )  // BP 1.5+
-			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-akismet.php' );
 
 		if ( bp_is_active( 'groups' ) && $settings['quickadmin'] )
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-quickadmin.php' );

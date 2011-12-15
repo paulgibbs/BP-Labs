@@ -1,10 +1,10 @@
 === BP Labs ===
 Contributors: DJPaul
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=P3K7Z7NHWZ5CL&lc=GB&item_name=B%2eY%2eO%2eT%2eO%2eS%20%2d%20BuddyPress%20plugins&currency_code=GBP&bn=PP%2dDon
-Tags: buddypress,experimental,akismet
-Requires at least: WordPress 3.1, BuddyPress 1.5
-Tested up to: WordPress 3.2.1, BuddyPress 1.5
-Stable tag: 1.2.2
+Tags: buddypress,experimental
+Requires at least: WordPress 3.3, BuddyPress 1.6
+Tested up to: WordPress 3.3, BuddyPress 1.6
+Stable tag: 1.3
 
 BP Labs contains unofficial and experimental BuddyPress features for testing and feedback. Requires BuddyPress 1.5+.
 
@@ -16,8 +16,6 @@ BP Labs contains three unofficial BuddyPress experiments; *@mentions autosuggest
 For example, to mention to Paul Gibbs, you could type `@Paul G`, and it will show a list of users who match. You can then select one of these users, and their short name will be added to the text area (even if Paul's short name is `paulgibbs`).
 
 *Quick Admin* requires Groups, and affects the group directory. Designed to help speed up accessing admin screens for each group, hovering over each group in the directory will reveal links to the admin screens for that group (e.g. edit details, group settings, group avatar).
-
-*Activity Stream Spam* keeps your Activity Stream minty-fresh by integrating it with Automattic's Akismet spam filtering service, It requires the Akismet WordPress plugin to work.
 
 Remember, these are my own unofficial experiments for BuddyPress which I am making available for testing, feedback, and to give people new shiny things for their websites.
 

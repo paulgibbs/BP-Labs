@@ -116,8 +116,7 @@ class BPLabs_Admin {
 			text-align: center;
 		}
 		.bpl_autosuggest,
-		.bpl_quickadmin,
-		.bpl_akismet {
+		.bpl_quickadmin {
 			margin-right: 2em;
 		}
 		</style>
@@ -230,11 +229,6 @@ class BPLabs_Admin {
 			<label><?php _e( 'On', 'bpl' ); ?> <input type="radio" name="bpl_quickadmin" class="bpl_quickadmin" value="on" <?php checked( $settings['quickadmin'] ); ?>/></label>
 			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_quickadmin" class="bpl_quickadmin" value="off" <?php checked( $settings['quickadmin'], false ); ?>/></label>
 
-			<h4><?php _e( 'Activity Stream Spam', 'bpl' ); ?></h4>
-			<p><?php printf( __( "Keep your Activity Stream minty-fresh with Automattic's Akismet spam filtering service; requires the <a href='%s'>Akismet WordPress plugin</a> and version 1.5 of BuddyPress.", 'bpl' ), 'http://wordpress.org/extend/plugins/akismet/' ); ?></p>
-			<label><?php _e( 'On', 'bpl' ); ?> <input type="radio" name="bpl_akismet" class="bpl_akismet" value="on" <?php checked( $settings['akismet'] ); ?>/></label>
-			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_akismet" class="bpl_akismet" value="off" <?php checked( $settings['akismet'], false ); ?>/></label>
-
 			<p><input type="submit" class="button-primary" value="<?php _e( 'Update Settings', 'bpl' ); ?>" /></p>
 		</form>
 
@@ -264,13 +258,6 @@ class BPLabs_Admin {
 				$settings['quickadmin'] = true;
 			else
 				$settings['quickadmin'] = false;
-		}
-
-		if ( !empty( $_POST['bpl_akismet'] ) ) {
-			if ( 'on' == $_POST['bpl_akismet'] )
-				$settings['akismet'] = true;
-			else
-				$settings['akismet'] = false;
 		}
 
 		if ( $settings != $existing_settings ) {
