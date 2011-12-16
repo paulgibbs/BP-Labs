@@ -191,6 +191,11 @@ class BPLabs_Admin {
 			<label><?php _e( 'On', 'bpl' ); ?> <input type="radio" name="bpl_quickadmin" class="bpl_quickadmin" value="on" <?php checked( $settings['quickadmin'] ); ?>/></label>
 			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_quickadmin" class="bpl_quickadmin" value="off" <?php checked( $settings['quickadmin'], false ); ?>/></label>
 
+			<h4><?php _e( 'Like Button', 'bpl' ); ?></h4>
+			<p><?php _e( 'Adds a context-sensitive Like Button to the WordPress Toolbar. Requires BuddyPress 1.6+.', 'bpl' ); ?></p>
+			<label><?php _e( 'On', 'bpl' ); ?> <input type="radio" name="bpl_like" class="bpl_like" value="on" <?php checked( $settings['like'] ); ?>/></label>
+			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_like" class="bpl_like" value="off" <?php checked( $settings['like'], false ); ?>/></label>
+
 			<p><input type="submit" class="button-primary" value="<?php _e( 'Update Settings', 'bpl' ); ?>" /></p>
 		</form>
 
@@ -220,6 +225,13 @@ class BPLabs_Admin {
 				$settings['quickadmin'] = true;
 			else
 				$settings['quickadmin'] = false;
+		}
+
+		if ( !empty( $_POST['bpl_like'] ) ) {
+			if ( 'on' == $_POST['bpl_like'] )
+				$settings['like'] = true;
+			else
+				$settings['like'] = false;
 		}
 
 		if ( $settings != $existing_settings ) {

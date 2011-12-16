@@ -107,7 +107,7 @@ class BPLabs {
 	 * @static
 	 */
 	public static function get_settings() {
-		return get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true, ) );
+		return get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true, 'like' => true ) );
 	}
 
 	/**
@@ -124,6 +124,9 @@ class BPLabs {
 
 		if ( bp_is_active( 'groups' ) && $settings['quickadmin'] )
 			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-quickadmin.php' );
+
+		if ( bp_is_active( 'activity' ) && $settings['like'] )
+			require_once( dirname( __FILE__ ) . '/beakers/class-bplabs-like.php' );
 
 		do_action( 'bplabs_include_experiments' );
 	}
