@@ -182,7 +182,7 @@ class BPLabs_Admin {
 			<p><?php _e( 'BP Labs contains unofficial BuddyPress experiments which I am making available for testing, feedback, and to give people new shiny toys for their websites.', 'bpl' ); ?></p>
 
 			<h4><?php _e( '@mentions autosuggest', 'bpl' ); ?></h4>
-			<p><?php _e( '@mentions autosuggest requires the Activity Stream component, and extends its @messaging feature to help you find the short name of a user. It is integrated into comments, the "What\'s New" activity status box, Private Messaging (body) and bbPress forums. To trigger the autosuggest, type an @ followed by at least one other letter.', 'bpl' ); ?></p>
+			<p><?php _e( '@mentions autosuggest requires the Activity component, and extends its @messaging feature to help you find the short name of a user. It is integrated into comments, the "What\'s New" activity status box, Private Messaging (body) and bbPress forums. To trigger the autosuggest, type an @ followed by at least one other letter.', 'bpl' ); ?></p>
 			<label><?php _e( 'On', 'bpl' ); ?> <input type="radio" name="bpl_autosuggest" class="bpl_autosuggest" value="on" <?php checked( $settings['autosuggest'] ); ?>/></label>
 			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_autosuggest" class="bpl_autosuggest" value="off" <?php checked( $settings['autosuggest'], false ); ?>/></label>
 
@@ -192,7 +192,7 @@ class BPLabs_Admin {
 			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_quickadmin" class="bpl_quickadmin" value="off" <?php checked( $settings['quickadmin'], false ); ?>/></label>
 
 			<h4><?php _e( 'Like Button', 'bpl' ); ?></h4>
-			<p><?php _e( 'Adds a context-sensitive Like Button to the WordPress Toolbar. Requires BuddyPress 1.6+.', 'bpl' ); ?></p>
+			<p><?php _e( 'Adds a context-sensitive Like Button to the WordPress Toolbar. Requires WordPress 3.3+, BuddyPress 1.6+ and its Activity component.', 'bpl' ); ?></p>
 			<label><?php _e( 'On', 'bpl' ); ?> <input type="radio" name="bpl_like" class="bpl_like" value="on" <?php checked( $settings['like'] ); ?>/></label>
 			<label><?php _e( 'Off', 'bpl' ); ?> <input type="radio" name="bpl_like" class="bpl_like" value="off" <?php checked( $settings['like'], false ); ?>/></label>
 

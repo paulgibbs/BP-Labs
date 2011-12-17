@@ -103,11 +103,13 @@ class BPLabs {
 	/**
 	 * Convenience function to retrieve the plugin's setting
 	 *
+	 * @return array
 	 * @since 1.2
 	 * @static
 	 */
 	public static function get_settings() {
-		return get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true, 'like' => true ) );
+		$settings = get_site_option( 'bplabs', array( 'autosuggest' => true, 'quickadmin' => true, 'like' => true ) );
+		return array_merge( array( 'autosuggest' => true, 'quickadmin' => true, 'like' => true ), $settings );
 	}
 
 	/**

@@ -34,6 +34,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 		) );
 
 		// This bit of javascript is what you could add directly to your theme
+
 		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/js/autosuggest';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )

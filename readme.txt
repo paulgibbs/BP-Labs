@@ -47,6 +47,7 @@ It got merged into BuddyPress 1.6! Woohoo!
 
 = 1.3 =
 * Akismet support removed as that got merged into BuddyPress 1.6! Woohoo!
+* Add Like Button experiments (requires BuddyPress 1.6+ & WordPress 3.3+).
 
 = 1.2.2 =
 * BuddyPress 1.5 compatibility.
