@@ -190,16 +190,18 @@ class BPLabs_Like extends BPLabs_Beaker {
 	 * Assumes that has_post_been_liked() has been succesful prior to invocation.
 	 * Returns a minimum of 1.
 	 *
-	 * @global int $activity_id
+	 * @global int $activity_id Optional; if not set, assumes we're in the Activity loop.
 	 * @return int Likes total
 	 * @since 1.3
 	 * @todo This may merit a direct SQL call.
 	 */
-	public static function get_likes_total( $activity_id ) {
-		$total = 1;
+	public static function get_likes_total( $activity_id = 0 ) {
+		if ( empty( $activity_id ) )
+			$activity_id = bp_get_activity_id();
 
 		// Get all the activity meta. Loop through, and inspect the keys.
 		$metas = (array) bp_activity_get_meta( $activity_id );
+		$total = 1;
 
 		foreach ( $metas as $meta ) {
 
@@ -326,15 +328,37 @@ class BPLabs_Like extends BPLabs_Beaker {
 	/**
 	 * Filter the activity stream item markup for Likes.
 	 *
+	 * @global unknown $activities_template
 	 * @return string
 	 * @since 1.3
 	 */
 	public function activity_content( $content ) {
+		global $activities_template;
+
 		// Only handle Like activity items.
 		if ( 'bpl_like' != bp_get_activity_object_name() || 'bpl_like' != bp_get_activity_type() )
 			return $content;
 
-		$content = '@todo This is a like.';
+		// Get the post
+		// @todo handle a missing post better
+		$post = get_post( bp_get_activity_item_id() );
+		if ( is_null( $post ) )
+			return $content;
+
+		// Get number of Likes that this post has
+		$extra_people = BPLabs_Like::get_likes_total();
+		if ( $extra_people ) {
+			$extra_content = '<p><img src="http://0.gravatar.com/avatar/81ec16063d89b162d55efe72165c105f?s=32&d=identicon&r=G" width="20" height="20" /> <img src="http://1.gravatar.com/avatar/9cf7c4541a582729a5fc7ae484786c0c?s=32&d=identicon&r=G" width="20" height="20" /> <img src="http://0.gravatar.com/avatar/e81cd075a6c9c29f712a691320e52dfd?s=32&d=identicon&r=G" width="20" height="20" /></p>';
+			$extra_people  = sprintf( __( 'and %s others', 'bpl' ), number_format_i18n( $extra_people - 1 ) );
+
+		} else {
+			$extra_content = '';
+			$extra_people  = '';
+		}
+
+		// Build the content
+		$content  = '<p>' . sprintf( __( '<a href="%1$s">%2$s</a> %3$s liked the article, <a href="%4$s">%5$s</a>.', 'bpl' ), esc_attr( bp_get_activity_user_link() ), $activities_template->activity->display_name, $extra_people, esc_attr( get_permalink( $post->ID ) ), apply_filters( 'the_title', $post->post_title, $post->ID ) ) . '</p>';
+		$content .= $extra_content;
 
 		// Don't truncate the activity content
 		remove_filter( 'bp_get_activity_content_body', 'bp_activity_truncate_entry', 5 );
