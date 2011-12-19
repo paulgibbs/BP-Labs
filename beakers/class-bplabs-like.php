@@ -68,6 +68,18 @@ class BPLabs_Like extends BPLabs_Beaker {
 
 		// Activity integration
 		add_action( 'bp_register_activity_actions', array( 'BPLabs_Like', 'register_activity_actions' ) );
+		add_filter( 'bp_get_activity_content_body', array( 'BPLabs_Like', 'activity_content' ), 2 );
+	}
+
+	/**
+	 * Register the activity stream actions for Likes
+	 *
+	 * @global object $bp BuddyPress global settings
+	 * @since 1.3
+	 */
+	public function register_activity_actions() {
+		global $bp;
+		bp_activity_set_action( $bp->activity->id, 'bpl_like', __( 'Liked a Post', 'bpl' ) );
 	}
 
 	/**
@@ -199,15 +211,13 @@ class BPLabs_Like extends BPLabs_Beaker {
 		if ( $activity_id )
 			$class = 'liked';
 
+		if ( ! $activity_id )
+			$activity_id = BPLabs_Like::has_post_been_liked();
+
 		// Get the Like count
-		$activity_id = BPLabs_Like::has_post_been_liked();
 		if ( $activity_id ) {
 			$meta  = (array) bp_activity_get_meta( $activity_id, 'bpl_like' );
-
-			if ( 'liked' == $class )
-				$title = '<span class="ab-icon"></span><span class="ab-label">' . number_format_i18n( count( $meta ) ) . '</span>';
-			else
-				$title = '<span class="ab-icon"></span><span class="ab-label">' .sprintf( _x( '%s likes', 'toolbar like button alternative label', 'bpl' ), number_format_i18n( count( $meta ) ) ) . '</span>';
+			$title = '<span class="ab-icon"></span><span class="ab-label">' .sprintf( _x( '%s likes', 'toolbar like button label, with count', 'bpl' ), number_format_i18n( count( $meta ) ) ) . '</span>';
 		}
 
 		// Add the top-level Group Admin button
@@ -274,6 +284,7 @@ class BPLabs_Like extends BPLabs_Beaker {
 		} else {
 			$activity_id = bp_activity_add( array(
 				'component' => 'bpl_like',
+				'content'   => ' ',  // To fool bp_activity_has_content()
 				'item_id'   => $post_id,
 				'type'      => 'bpl_like',
 				'user_id'   => bp_loggedin_user_id(),
@@ -287,14 +298,22 @@ class BPLabs_Like extends BPLabs_Beaker {
 	}
 
 	/**
-	 * Register the activity stream actions for Likes
+	 * Filter the activity stream item markup for Likes.
 	 *
-	 * @global object $bp BuddyPress global settings
+	 * @return string
 	 * @since 1.3
 	 */
-	function register_activity_actions() {
-		global $bp;
-		bp_activity_set_action( $bp->activity->id, 'bpl_like', __( 'Liked a Post', 'bpl' ) );
+	public function activity_content( $content ) {
+		// Only handle Like activity items.
+		if ( 'bpl_like' != bp_get_activity_object_name() || 'bpl_like' != bp_get_activity_type() )
+			return $content;
+
+		$content = '@todo This is a like.';
+
+		// Don't truncate the activity content
+		remove_filter( 'bp_get_activity_content_body', 'bp_activity_truncate_entry', 5 );
+
+		return $content;
 	}
 }
 new BPLabs_Like();
