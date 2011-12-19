@@ -148,40 +148,69 @@ class BPLabs_Like extends BPLabs_Beaker {
 		if ( ! $user_id && is_user_logged_in() )
 			$user_id = bp_loggedin_user_id();
 
-		// Double-check both IDs are set, and that the Activity component is active
+		// Is the Activity component active?
 		if ( ! $post_id || ! $user_id || ! bp_is_active( 'activity' ) )
 			return false;
 
-		$activity = bp_activity_get( array(
-			'filter' => array(
-				'action'     => 'bpl_like',  // Action to filter on
-				'object'     => 'bpl_like',  // Type to filter on
-				'primary_id' => $post_id,    // Post ID to filter on
-			),
-			'max'    => 1,
-			'spam'   => 'all',
-		) );
-
-		if ( ! empty( $activity['activities'] ) )
-			$activity = $activity['activities'][0];
-		else
+		// Find the Like activity
+		$activity_id = BPLabs_Like::has_post_been_liked( $post_id );
+		if ( empty( $activity_id ) )
 			return false;
 
 		// Check if the creator of the original Like activity is the current user
-		if ( $user_id == $activity->user_id )
-			return $activity->id;
+		$activity = bp_activity_get( array(
+				'filter' => array(
+					'action'     => 'bpl_like',  // Action to filter on
+					'object'     => 'bpl_like',  // Type to filter on
+					'primary_id' => $post_id,    // Post ID to filter on
+				),
+				'max'    => 1,
+				'spam'   => 'all',
+			) );
 
-		// Loop through the meta, and compare recorded user IDs
-		$metas = (array) bp_activity_get_meta( $activity->id, 'bpl_like' );
+		if ( $user_id == $activity['activities'][0]->user_id )
+			return $activity_id;
+
+		// Get all the activity meta and loop through
+		$metas = (array) bp_activity_get_meta( $activity_id );
 		foreach ( $metas as $meta ) {
 
-			// User has Liked this post, but didn't create the original Like.
-			if ( $user_id == $meta[0] )
-				return $activity->id;
+			// Has user has Liked this post?
+			if ( 'bpl_like_' . $user_id == $meta )
+				return $activity_id;
 		}
 
-		// If we're down here, the user hasn't Liked this post... yet?
+		// If we're down here, the user hasn't Liked this post.
 		return false;
+	}
+
+	/**
+	 * Get the Likes total for the specified activity ID.
+	 *
+	 * Assumes that has_post_been_liked() has been succesful prior to invocation.
+	 * Returns a minimum of 1.
+	 *
+	 * @global int $activity_id
+	 * @return int Likes total
+	 * @since 1.3
+	 * @todo This may merit a direct SQL call.
+	 */
+	public static function get_likes_total( $activity_id ) {
+		$total = 1;
+
+		// Get all the activity meta. Loop through, and inspect the keys.
+		$metas = (array) bp_activity_get_meta( $activity_id );
+
+		foreach ( $metas as $meta ) {
+
+			if ( false === strpos( $meta, 'bpl_like_' ) )
+			 	continue;
+
+			// Increment Likes counts
+			$total++;
+		}
+
+		return $total;
 	}
 
 	/**
@@ -216,8 +245,8 @@ class BPLabs_Like extends BPLabs_Beaker {
 
 		// Get the Like count
 		if ( $activity_id ) {
-			$meta  = (array) bp_activity_get_meta( $activity_id, 'bpl_like' );
-			$title = '<span class="ab-icon"></span><span class="ab-label">' .sprintf( _x( '%s likes', 'toolbar like button label, with count', 'bpl' ), number_format_i18n( count( $meta ) ) ) . '</span>';
+			$likes_count = BPLabs_Like::get_likes_total( $activity_id );
+			$title       = '<span class="ab-icon"></span><span class="ab-label">' . sprintf( _n( '%s Like', '%s Likes', $likes_count, 'bpl' ), number_format_i18n( $likes_count ) ) . '</span>';
 		}
 
 		// Add the top-level Group Admin button
@@ -270,15 +299,12 @@ class BPLabs_Like extends BPLabs_Beaker {
 
 		// Like already exists
 		if ( $activity_id ) {
-			// Add new Like to meta
-			$meta   = (array) bp_activity_get_meta( $activity_id, 'bpl_like' );
-			$meta[] = array( bp_loggedin_user_id(), bp_core_current_time() );
 
-			// Update meta
-			bp_activity_update_meta( $activity_id, 'bpl_like', $meta );
+			// Add new Like to meta
+			bp_activity_update_meta( $activity_id, 'bpl_like_' . bp_loggedin_user_id(), 'bpl_like_' . bp_loggedin_user_id() );
 
 			// Get Likes total
-			$likes_count = count( $meta );
+			$likes_count = BPLabs_Like::get_likes_total( $activity_id );
 
 		// Add new Like
 		} else {
@@ -293,8 +319,8 @@ class BPLabs_Like extends BPLabs_Beaker {
 			$likes_count = 1;
 		}
 
-		// Send Likes total back
-		exit( (string) number_format_i18n( $likes_count ) );
+		// Send Likes total
+		exit( sprintf( _n( '%s Like', '%s Likes', $likes_count, 'bpl' ), number_format_i18n( $likes_count ) ) );
 	}
 
 	/**
