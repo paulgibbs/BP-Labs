@@ -24,7 +24,7 @@ abstract class BPLabs_Beaker {
 	 * @since 1.0
 	 */
 	public function __construct() {
-		if ( is_admin() )
+		if ( is_admin() && (!defined('DOING_AJAX') || DOING_AJAX === false) )
 			return;
 
 		add_action( 'init', array( $this, 'enqueue_script' ) );
