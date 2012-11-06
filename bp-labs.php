@@ -9,6 +9,7 @@
  * Domain Path: /languages/
  * Text Domain: bpl
  * License: GPL3
+ * Version: 1.3
  */
 
 /**
