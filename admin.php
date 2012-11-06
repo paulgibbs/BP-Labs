@@ -306,13 +306,6 @@ class BPLabs_Admin {
 			$is_bp_root_blog = __( 'non-standard', 'bpl' );
 
 		$is_bp_default_child_theme = __( 'no', 'bpl' );
-		$theme = current_theme_info();
-
-		if ( 'BuddyPress Default' == $theme->parent_theme )
-			$is_bp_default_child_theme = __( 'yes', 'bpl' );
-
-		if ( 'BuddyPress Default' == $theme->name )
-			$is_bp_default_child_theme = __( 'n/a', 'bpl' );
 
 	  if ( empty( $wp_rewrite->permalink_structure ) )
 			$custom_permalinks = __( 'default', 'bpl' );
@@ -335,12 +328,6 @@ class BPLabs_Admin {
 			<li><?php printf( __( 'PHP: %s', 'bpl' ), phpversion() ); ?></li>
 			<li><?php printf( __( 'WordPress: %s', 'bpl' ), $wp_version ); ?></li>
 			<li><?php printf( __( 'WordPress multisite: %s', 'bpl' ), $is_multisite ); ?></li>
-		</ul>
-
-		<h4><?php _e( 'Theme', 'bpl' ); ?></h4>
-		<ul>
-			<li><?php printf( __( 'BP-Default child theme: %s', 'bpl' ), $is_bp_default_child_theme ); ?></li>
-			<li><?php printf( __( 'Current theme: %s', 'bpl' ), $theme->name ); ?></li>
 		</ul>
 
 		<h4><?php _e( 'Active Plugins', 'bpl' ); ?></h4>
