@@ -41,7 +41,7 @@ class BPLabs_Admin {
 	 * @since 1.1
 	 */
 	public function init() {
-		if ( !empty( $_GET['tab'] ) ) {
+		if ( ! empty( $_GET['tab'] ) ) {
 			if ( 'support' == $_GET['tab'] )
 				$tab = 'support';
 
@@ -49,7 +49,7 @@ class BPLabs_Admin {
 			$tab = 'settings';
 		}
 
-		add_screen_option( 'layout_columns', array( 'max' => 2 ) );
+		add_screen_option( 'layout_columns', array( 'default' => 2, 'max' => 2 ) );
 
 		// Support tab
 		if ( 'support' == $tab )
@@ -82,7 +82,7 @@ class BPLabs_Admin {
 	public function admin_page() {
 		global $screen_layout_columns;
 
-		if ( !empty( $_GET['tab'] ) ) {
+		if ( ! empty( $_GET['tab'] ) ) {
 			if ( 'support' == $_GET['tab'] )
 				$tab = 'support';
 
