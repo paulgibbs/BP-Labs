@@ -2,8 +2,7 @@
 /**
  * Plugin Name: BP Labs
  * Plugin URI: http://buddypress.org/community/groups/bp-labs/
- * Description: BP Labs contains unofficial and experimental BuddyPress features for testing and feedback. Cake, and grief counselling, will be available at the conclusion of the plugin.
- * Version: 1.3
+ * Description: BP Labs contains unofficial and experimental BuddyPress features for testing and feedback.
  * Author: Paul Gibbs
  * Author URI: http://byotos.com
  * Network: true
@@ -13,10 +12,10 @@
  */
 
 /**
- * BP Labs contains unofficial and experimental BuddyPress features for testing and feedback. Cake, and grief counselling, will be available at the conclusion of the plugin.
+ * BP Labs contains unofficial and experimental BuddyPress features for testing and feedback.
  *
  * "BP Labs"
- * Copyright (C) 2011 Paul Gibbs
+ * Copyright (C) 2011-12 Paul Gibbs
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -34,7 +33,7 @@
  */
 
 // Exit if accessed directly
-if ( !defined( 'ABSPATH' ) )
+if ( ! defined( 'ABSPATH' ) )
 	exit;
 
 /**
