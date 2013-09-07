@@ -20,6 +20,10 @@ class BPLabs_Admin {
 	 * @since 1.1
 	 */
 	public function __construct() {
+		// Main settings page
+		// Multisite uses a different parent slug than single site
+		$this->settings_page = bp_core_do_network_admin() ? 'settings.php' : 'options-general.php';
+
 		add_action( bp_core_admin_hook(), array( $this, 'setup_menu' ) );
 	}
 
@@ -30,7 +34,15 @@ class BPLabs_Admin {
 	 */
 	public function setup_menu() {
 		add_action( 'load-settings_page_bplabs', array( $this, 'init' ) );
-		add_options_page( __( 'BP Labs', 'bpl' ), __( 'BP Labs', 'bpl' ), 'manage_options', 'bplabs', array( $this, 'admin_page' ) );
+
+		add_submenu_page(
+			$this->settings_page,
+			__( 'BP Labs', 'bpl' ),
+			__( 'BP Labs', 'bpl' ),
+			'manage_options',
+			'bplabs',
+			array( $this, 'admin_page' )
+		);
 	}
 
 	/**
