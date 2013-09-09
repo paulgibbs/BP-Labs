@@ -45,46 +45,59 @@
 			// Add results box
 			function add_panel() {
 				var html = '<ul id="mentions-autosuggest"></ul>';
+				var parent = input_obj.parent();
 
 				if (o.resultsbox) {
 					if ('string' == typeof o.resultsbox) {
+						parent = $(o.resultsbox);
+
 						if ('prepend' == o.resultsbox_position) {
 							$(o.resultsbox).prepend(html);
 						} else if ('append' == o.resultsbox_position) {
 							$(o.resultsbox).append(html);
 						} else if ('before' == o.resultsbox_position) {
 							$(o.resultsbox).before(html);
+							parent = parent.parent();
 						} else if ('after' == o.resultsbox_position) {
 							$(o.resultsbox).after(html);
+							parent = parent.parent();
 						}
 
 					// Assume jQuery object
-					}	else if (o.resultsbox) {
+					} else if (o.resultsbox) {
+						parent = o.resultsbox;
+
 						if ('prepend' == o.resultsbox_position) {
 							o.resultsbox.prepend(html);
 						} else if ('append' == o.resultsbox_position) {
 							o.resultsbox.append(html);
 						} else if ('before' == o.resultsbox_position) {
 							o.resultsbox.before(html);
+							parent = parent.parent();
 						} else if ('after' == o.resultsbox_position) {
 							o.resultsbox.after(html);
+							parent = parent.parent();
 						}
 					}
 
 				// Fallback to parent's element
 				} else {
 					if ('prepend' == o.resultsbox_position) {
-						input_obj.parent().prepend(html);
+						parent.prepend(html);
 					} else if ('append' == o.resultsbox_position) {
-						input_obj.parent().append(html);
+						parent.append(html);
 					} else if ('before' == o.resultsbox_position) {
-						input_obj.parent().before(html);
+						parent.before(html);
+						parent = parent.parent();
 					} else if ('after' == o.resultsbox_position) {
-						input_obj.parent().after(html);
+						parent.after(html);
+						parent = parent.parent();
 					}
 				}
 
-				results = $('#mentions-autosuggest');
+				// add results to the currently-focused #mentions-autosuggest UL
+				// @todo should probably switch the ID to a class
+				results = parent.find('#mentions-autosuggest');
 			}
 
 			// Close the results panel
