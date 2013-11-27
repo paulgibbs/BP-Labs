@@ -63,7 +63,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 	 * @since 1.0
 	 */
 	protected function register_actions() {
-		add_action( 'wp_ajax_activity_mention_autosuggest', array( 'BPLabs_Autosuggest', 'mention_autosuggest' ) );
+		add_action( 'wp_ajax_activity_mention_autosuggest', array( $this, 'mention_autosuggest' ) );
 	}
 
 	/**

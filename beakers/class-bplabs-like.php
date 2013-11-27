@@ -61,14 +61,14 @@ class BPLabs_Like extends BPLabs_Beaker {
 		add_action( 'wp', array( $this, 'enqueue_script' ) );
 
 		// Add Toolbar support
-		add_action( 'admin_bar_menu', array( 'BPLabs_Like', 'toolbar' ), 75 );
+		add_action( 'admin_bar_menu', array( $this, 'toolbar' ), 75 );
 
 		// AJAX handler
-		add_action( 'wp_ajax_bpl-like', array( 'BPLabs_Like', 'ajax_reciever' ) );
+		add_action( 'wp_ajax_bpl-like', array( $this, 'ajax_reciever' ) );
 
 		// Activity integration
-		add_action( 'bp_register_activity_actions', array( 'BPLabs_Like', 'register_activity_actions' ) );
-		add_filter( 'bp_get_activity_content_body', array( 'BPLabs_Like', 'activity_content' ), 2 );
+		add_action( 'bp_register_activity_actions', array( $this, 'register_activity_actions' ) );
+		add_filter( 'bp_get_activity_content_body', array( $this, 'activity_content' ), 2 );
 	}
 
 	/**
