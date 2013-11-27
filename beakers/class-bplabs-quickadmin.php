@@ -63,4 +63,3 @@ class BPLabs_Quickadmin extends BPLabs_Beaker {
 	}
 }
 new BPLabs_Quickadmin();
-?>

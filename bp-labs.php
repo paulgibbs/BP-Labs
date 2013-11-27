@@ -149,4 +149,3 @@ class BPLabs {
 add_action( 'bp_include', array( 'BPLabs', 'init' ) );
 
 // The cake is a lie.
-?>

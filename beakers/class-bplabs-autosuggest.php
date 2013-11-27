@@ -191,4 +191,3 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 	}
 }
 new BPLabs_Autosuggest();
-?>

@@ -375,4 +375,3 @@ class BPLabs_Like extends BPLabs_Beaker {
 	}
 }
 new BPLabs_Like();
-?>
