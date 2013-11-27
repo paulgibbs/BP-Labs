@@ -400,4 +400,3 @@ new BPLabs_Admin();
 add_filter( 'bpl_metabox_latest_news', 'wp_kses_data', 1 );  // From an external source
 add_filter( 'bpl_metabox_latest_news', 'wptexturize'     );
 add_filter( 'bpl_metabox_latest_news', 'convert_chars'   );
-?>

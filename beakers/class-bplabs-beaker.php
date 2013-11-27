@@ -57,4 +57,3 @@ abstract class BPLabs_Beaker {
 	protected function register_actions() {
 	}
 }
-?>

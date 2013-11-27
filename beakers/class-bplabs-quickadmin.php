@@ -20,7 +20,7 @@ class BPLabs_Quickadmin extends BPLabs_Beaker {
 	 * @since 1.0
 	 */
 	protected function register_actions() {
-		add_action( 'bp_directory_groups_item', array( 'BPLabs_Quickadmin', 'make_links' ) );
+		add_action( 'bp_directory_groups_item', array( $this, 'make_links' ) );
 	}
 
 	/**
@@ -63,4 +63,3 @@ class BPLabs_Quickadmin extends BPLabs_Beaker {
 	}
 }
 new BPLabs_Quickadmin();
-?>
