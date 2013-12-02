@@ -104,16 +104,19 @@
 			function close_panel() {
 				clearTimeout(timer);
 
-				results.slideUp('slow', function() {
-					results.empty();
+				window.setTimeout(function() {
+					results.slideUp('slow', function() {
+						console.log('empty');
+						results.empty();
 
-					// Move caret to end
-					input_obj[0].setSelectionRange(input_obj.val().length, input_obj.val().length);
-					input_obj.focus();
-				});
+						// Move caret to end
+						input_obj[0].setSelectionRange(input_obj.val().length, input_obj.val().length);
+						input_obj.focus();
+					});
 
-				found_at_token = results_started = false;
-				previous_query = '';
+					found_at_token = results_started = false;
+					previous_query = '';
+				}, 50);
 			}
 
 			// Listen for input
