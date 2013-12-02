@@ -49,6 +49,7 @@ It got merged into BuddyPress 1.6! Woohoo!
 
 
 = dev =
+* Fixes populating the username on autocomplete
 * Loads admin page on 'admin_init' hook instead of 'bp_include'
 * Fixes strict standard notices
 
