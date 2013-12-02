@@ -23,9 +23,9 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/js/jquery.mentions';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
-			wp_enqueue_script( 'bplabs-autosuggest-js', "{$dir}.dev.js", array( 'jquery' ), '1.2' );
+			wp_enqueue_script( 'bplabs-autosuggest-js', "{$dir}.dev.js", array( 'jquery' ), '1.3' );
 		else
-			wp_enqueue_script( 'bplabs-autosuggest-js', "{$dir}.js", array( 'jquery' ), '1.2' );
+			wp_enqueue_script( 'bplabs-autosuggest-js', "{$dir}.js", array( 'jquery' ), '1.3' );
 
 		wp_localize_script( 'bplabs-autosuggest-js', 'BPMentions', array(
 			'error1'     => __( 'Sorry, an error occurred.', 'bpl' ),
