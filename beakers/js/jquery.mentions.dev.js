@@ -106,7 +106,6 @@
 
 				window.setTimeout(function() {
 					results.slideUp('slow', function() {
-						console.log('empty');
 						results.empty();
 
 						// Move caret to end
