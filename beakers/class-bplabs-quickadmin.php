@@ -29,12 +29,9 @@ class BPLabs_Quickadmin extends BPLabs_Beaker {
 	 * @since 1.0
 	 */
 	public function enqueue_style() {
-		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/css/quickadmin';
-
-		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
-			wp_enqueue_style( 'bplabs-quickadmin', "{$dir}.dev.css", array(), '1.0' );
-		else
-			wp_enqueue_style( 'bplabs-quickadmin', "{$dir}.css", array(), '1.0' );
+		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.dev' : '';
+		
+		wp_enqueue_style( 'bplabs-quickadmin', plugins_url( "css/quickadmin$suffix.css", __FILE__ ), array(), '1.0' );
 	}
 
 	/**

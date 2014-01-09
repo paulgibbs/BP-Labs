@@ -20,12 +20,9 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 	 * @since 1.0
 	 */
 	public function enqueue_script() {
-		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/js/jquery.mentions';
+		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.dev' : '';
 
-		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
-			wp_enqueue_script( 'bplabs-autosuggest-js', "{$dir}.dev.js", array( 'jquery' ), '1.3' );
-		else
-			wp_enqueue_script( 'bplabs-autosuggest-js', "{$dir}.js", array( 'jquery' ), '1.3' );
+		wp_enqueue_script( 'bplabs-autosuggest-js', plugins_url( "js/jquery.mentions$suffix.js", __FILE__ ), array( 'jquery' ), '1.3' );
 
 		wp_localize_script( 'bplabs-autosuggest-js', 'BPMentions', array(
 			'error1'     => __( 'Sorry, an error occurred.', 'bpl' ),
@@ -34,13 +31,7 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 		) );
 
 		// This bit of javascript is what you could add directly to your theme
-
-		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/js/autosuggest';
-
-		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
-			wp_enqueue_script( 'bplabs-autosuggest-theme-js', "{$dir}.dev.js", array( 'bplabs-autosuggest-js' ), '1.0' );
-		else
-			wp_enqueue_script( 'bplabs-autosuggest-theme-js', "{$dir}.js", array( 'bplabs-autosuggest-js' ), '1.0' );
+		wp_enqueue_script( 'bplabs-autosuggest-theme-js', plugins_url( "js/autosuggest$suffix.js", __FILE__ ), array( 'bplabs-autosuggest-js' ), '1.0' );
 	}
 
 	/**
@@ -49,12 +40,9 @@ class BPLabs_Autosuggest extends BPLabs_Beaker {
 	 * @since 1.0
 	 */
 	public function enqueue_style() {
-		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/css/jquery.mentions';
+		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.dev' : '';
 
-		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
-			wp_enqueue_style( 'bplabs-autosuggest', "{$dir}.dev.css", array(), '1.0' );
-		else
-			wp_enqueue_style( 'bplabs-autosuggest', "{$dir}.css", array(), '1.0' );
+		wp_enqueue_style( 'bplabs-autosuggest', plugins_url( "css/jquery.mentions$suffix.css", __FILE__ ), array(), '1.0' );
 	}
 
 	/**

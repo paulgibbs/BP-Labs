@@ -24,11 +24,9 @@ class BPLabs_Like extends BPLabs_Beaker {
 		if ( ! BPLabs_Like::is_like_enabled() )
 			return;
 
-		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/css/like';
-		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
-			$dir .= '.dev';
+		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.dev' : '';
 
-		wp_enqueue_style( 'bplabs-like', "{$dir}.css", array(), '1.3' );
+		wp_enqueue_style( 'bplabs-like', plugins_url( "css/like$suffix.css", __FILE__ ), array(), '1.3' );
 	}
 
 	/**
@@ -40,12 +38,10 @@ class BPLabs_Like extends BPLabs_Beaker {
 		// Check if to show the Like button for the current screen
 		if ( ! BPLabs_Like::is_like_enabled() )
 			return;
+		
+		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.dev' : '';
 
-		$dir = WP_PLUGIN_URL . '/bp-labs/beakers/js/like';
-		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
-			$dir .= '.dev';
-
-		wp_enqueue_script( 'bplabs-like', "{$dir}.js", array( 'jquery' ), '1.3', true );
+		wp_enqueue_script( 'bplabs-like', plugins_url( "js/like$suffix.js", __FILE__ ), array( 'jquery' ), '1.3', true );
 	}
 
 	/**
