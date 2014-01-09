@@ -79,7 +79,7 @@ class BPLabs {
 	public function __construct() {
 		$this->_include_experiments();
 
-		add_action( 'admin_init', array( $this, '_load_admin_screen' ) );
+		add_action( 'init', array( $this, '_load_admin_screen' ) );
 		add_filter( 'plugin_action_links', array( $this, '_add_settings_link' ), 10, 2 );
 	}
 
@@ -139,7 +139,7 @@ class BPLabs {
 	 * @since 1.1
 	 */
 	public function _load_admin_screen() {
-		if ( ! is_super_admin() ) )
+		if ( ! is_admin() || ! is_super_admin() )
 			return;
 
 		require_once( dirname( __FILE__ ) . '/admin.php' );
